@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ActivityIndicator, FlatList, Platform } from 'react-native'
+import { View, Text, ActivityIndicator, FlatList, Platform, TouchableOpacity, StyleSheet } from 'react-native'
 import { Picker, Item } from 'native-base'
 import UsePostFetch from '../../../hooks/UsePostFetch'
 import styles from '../../../styles/common'
 import { httpService } from '../../../utils'
 import Post from '../../../components/Post'
+import Ionicon from 'react-native-vector-icons/dist/Ionicons'
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 
 export const ProfileAlbums = (props) => {
-    const { user, height, width } = props
+    const { user, height, width, filterMenu, setFilterMenu } = props
     const formData = new FormData()
     formData.append('user_id', user.data.session_id)
     const { loading, error, data } = UsePostFetch('album/album_name_list', 'POST', formData)
@@ -54,6 +56,7 @@ export const ProfileAlbums = (props) => {
 
     const getFilteredAlbums = async (value) => {
         console.log(value)
+        setFilterMenu(false)
         if (value === 'all') {
             setFilterdAlbums(albums)
         } else {
@@ -77,7 +80,7 @@ export const ProfileAlbums = (props) => {
     }
 
     const headerComp = () => {
-        return <Text>Header Comp</Text>
+        return <Text>Header Component</Text>
     }
 
     const footerComp = () => {
@@ -90,7 +93,8 @@ export const ProfileAlbums = (props) => {
 
     return (
         <View>
-            {albumNames.length > 0 &&
+
+            {/* {albumNames.length > 0 &&
                 <Item picker style={{
                     height: 45, marginLeft: 20,
                     backgroundColor: '#ddd', paddingHorizontal: 10, width: 190,
@@ -112,7 +116,7 @@ export const ProfileAlbums = (props) => {
                         })}
                     </Picker>
                 </Item>
-            }
+            } */}
 
             {noData !== '' ? <Text style={styles.noData}>{noData}</Text> :
                 <FlatList
@@ -129,8 +133,50 @@ export const ProfileAlbums = (props) => {
                     onEndReachedThreshold={0.2}
                     // ListHeaderComponent={headerComp}
                     ListFooterComponent={footerComp}
-                    style={{ height: Platform.OS === 'ios' ? height - 325 : height - 235 }}
+                    style={{ height: Platform.OS === 'ios' ? height - 257 : height - 235 }}
                 />
+            }
+
+            {/* Filters */}
+            {albumNames.length > 0 &&
+                <View style={{
+                    position: 'absolute', right: 20, top: -35
+                }}>
+                    <TouchableOpacity onPress={() => setFilterMenu(!filterMenu)}
+                        style={{ position: 'absolute', top: -0, right: 5 }}
+                    >
+                        <Ionicon name="ios-filter-outline" size={25} />
+                    </TouchableOpacity>
+                    {filterMenu &&
+                        <>
+                            <TouchableWithoutFeedback
+                                style={{
+                                    backgroundColor: 'rgba(0,0,0,.01)',
+                                    position: 'relative', top: -220, left: 25,
+                                    width: width + 50, height: height
+                                }}
+                                onPressIn={() => {
+                                    setFilterMenu(false)
+                                }}
+                            >
+                            </TouchableWithoutFeedback>
+                            <View style={{
+                                position: 'absolute', right: -5, top: 30, width: 150,
+                                backgroundColor: '#fff', zIndex: 9999, elevation: 9999,
+                                shadowColor: '#aaa', shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.25,
+                                padding: 0, borderWidth: 1, borderColor: '#ddd'
+                            }}>
+                                {albumNames.map(album => {
+                                    return <TouchableOpacity onPress={() => getFilteredAlbums(album.name)}
+                                        style={{ paddingVertical: 10, paddingHorizontal: 20 }}
+                                    >
+                                        <Text>{album.name}</Text>
+                                    </TouchableOpacity>
+                                })}
+                            </View>
+                        </>
+                    }
+                </View>
             }
         </View>
     )

@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Container, Content, Text, Thumbnail, Icon, Button } from 'native-base'
-import { Dimensions, TouchableOpacity, View } from 'react-native'
+import { Container, Text, Thumbnail, Icon } from 'native-base'
+import { Dimensions, TouchableOpacity, View, Pressable } from 'react-native'
 import defaultAvatar from '../../../assets/grayman.png'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import Ionicon from 'react-native-vector-icons/dist/Ionicons'
 import styles from '../../styles/common'
-import { googleSignOut, fbSignOut } from '../../utils'
 import { env } from '../../env'
 import { ProfilePosts } from './Profile/ProfilePosts'
 import { ProfileAlbums } from './Profile/ProfileAlbums'
@@ -16,6 +14,7 @@ const Profile = (props) => {
 	const [posts, setPosts] = useState(false)
 	const [albums, setAlbums] = useState(false)
 	const {height, width} = Dimensions.get('window')
+    const [filterMenu, setFilterMenu] = useState(false)
 
 	useEffect(() => {
 		// console.log(JSON.stringify(user))
@@ -26,21 +25,6 @@ const Profile = (props) => {
 			setAlbums(true)
 		}
 	}, [])
-
-	const signOut = async () => {
-		try {
-			if (user.data.login_with === 'gmail') {
-				googleSignOut()
-			} else if (user.data.login_with === 'facebook') {
-				fbSignOut()
-			}
-			await AsyncStorage.removeItem('userData')
-			setSelectedTabIndex(0)
-			getaActive(0)
-		} catch (error) {
-			alert("User data not removed.")
-		}
-	}
 
 	const renderHeader = () => {
 		return (
@@ -106,7 +90,11 @@ const Profile = (props) => {
 
 	return (
 		<Container>
-			<View style={{flex: 1}}>
+		{/* <Pressable onPress={() => {
+			if(filterMenu)
+				setFilterMenu(false)
+			}} style={{flex: 1}}> */}
+			<View  style={{flex: 1}}>
 				{renderHeader()}
 				{/* tabs titles */}
 				<View style={styles.tabsHeaders}>
@@ -125,21 +113,16 @@ const Profile = (props) => {
 						<Text style={[styles.pTabLinkText, {color: albums ? '#00639c' : '#333', fontWeight: albums ? 'bold' : 'normal'}]}>Albums</Text>
 					</TouchableOpacity>
 				</View>
+			
+				{/* Child Comps */}
 				<View>
-					{ posts ? <ProfilePosts user={user} height={height} width={width} /> : <ProfileAlbums user={user}height={height} width={width} /> }
+					{ posts ? 
+						<ProfilePosts user={user} height={height} width={width} /> : 
+						<ProfileAlbums user={user}height={height} width={width} filterMenu={filterMenu} setFilterMenu={setFilterMenu} /> 
+					}
 				</View>
-
-				{/* <View style={{ marginTop: '16%', justifyContent: 'center', alignItems: 'center' }} >
-					<View style={{ borderWidth: 2, borderColor: '#808080', marginBottom: 20, width: 180, height: 50, justifyContent: 'center', alignItems: 'center', borderRadius: 5 }}>
-						<Text style={{ fontSize: 20, fontWeight: 'bold' }}>Profile</Text>
-					</View>
-					<View style={{ alignItems: 'center' }}>
-						<Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Handle name: {user.data.handle_name}</Text>
-						<Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 20 }}>Login with: {user.data.login_with}</Text>
-					</View>
-				</View> */}
 			</View>
-
+			{/* </Pressable> */}
 		</Container>
 	)
 }
