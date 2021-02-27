@@ -172,7 +172,7 @@ export const ProfileAlbums = (props) => {
                                     <Text>All</Text>
                                 </TouchableOpacity>
                                 {albumNames.map(album => {
-                                    return <TouchableOpacity onPress={() => getFilteredAlbums(album.name)}
+                                    return <TouchableOpacity key={album.id} onPress={() => getFilteredAlbums(album.name)}
                                         style={{ paddingVertical: 10, paddingHorizontal: 20 }}
                                     >
                                         <Text>{album.name}</Text>
