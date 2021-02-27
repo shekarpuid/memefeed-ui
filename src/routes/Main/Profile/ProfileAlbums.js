@@ -166,6 +166,11 @@ export const ProfileAlbums = (props) => {
                                 shadowColor: '#aaa', shadowOffset: { width: 0, height: 7 }, shadowOpacity: 0.25,
                                 padding: 0, borderWidth: 1, borderColor: '#ddd'
                             }}>
+                                <TouchableOpacity onPress={() => getFilteredAlbums('all')}
+                                    style={{ paddingVertical: 10, paddingHorizontal: 20 }}
+                                >
+                                    <Text>All</Text>
+                                </TouchableOpacity>
                                 {albumNames.map(album => {
                                     return <TouchableOpacity onPress={() => getFilteredAlbums(album.name)}
                                         style={{ paddingVertical: 10, paddingHorizontal: 20 }}
