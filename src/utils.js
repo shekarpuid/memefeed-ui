@@ -69,7 +69,7 @@ export function timesAgo(date) {
     }
 }
 
-// Http Service
+// Http Service - One for all api services
 export function httpService(url, method, formData) {
     const username = 'memefeed'
     const password = 'Connect12345!'
@@ -79,7 +79,6 @@ export function httpService(url, method, formData) {
         'Authorization',
         `Basic ${encode(`${username}:${password}`)}`
     )
-    // setLoading(true)
     return fetch(`${env.baseUrl}${url}`, {
         method: method,
         headers: myHeaders,

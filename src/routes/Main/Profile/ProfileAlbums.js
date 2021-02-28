@@ -28,7 +28,7 @@ export const ProfileAlbums = (props) => {
     const [menuId, setMenuId] = useState(0)
     const [editing, setEditing] = useState(false)
     const [newPost, setNewPost] = useState(0)
-    // const [showPosts, setShowPosts] = useState(false)
+    const [loadingList, setLoadingList] = useState(false)
 
     useEffect(() => {
         getAlbums()
@@ -46,24 +46,30 @@ export const ProfileAlbums = (props) => {
                 } else {
                     setAlbumNames(json.data)
                 }
-                console.log("Albums: ", JSON.stringify(json))
+                // console.log("Albums: ", JSON.stringify(json))
             })
-            .catch(error => console.log(error))
+            .catch(error => {alert(error);console.log(error)})
     }
 
     const getAlbums = async () => {
+        setLoadingList(true)
         await httpService('album/album_list', 'POST', formData)
             .then(res => res.json())
             .then(json => {
                 setAlbums(json.data)
                 setFilterdAlbums(json.data)
                 // console.log("Albums: ", JSON.stringify(json))
+                setLoadingList(false)
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                console.log(error)
+                alert(error)
+                setLoadingList(false)
+            })
     }
 
     const getFilteredAlbums = async (value) => {
-        console.log(value)
+        // console.log(value)
         setFilterMenu(false)
         if (value === 'all') {
             setFilterdAlbums(albums)
@@ -126,10 +132,7 @@ export const ProfileAlbums = (props) => {
                 </Item>
             } */}
 
-
-
             {showPosts ?
-
                 <CreatePost
                     onPostSend={(data) => onHomePostSend(data)}
                     postTypes={postTypes} user={user}
@@ -139,6 +142,7 @@ export const ProfileAlbums = (props) => {
                 /> :
                 <>
                     {noData !== '' ? <Text style={styles.noData}>{noData}</Text> :
+                        loadingList ? <ActivityIndicator color="#00639c" size='large' style={{ height: 50, backgroundColor: '#fff' }} /> :
                         <FlatList
                             data={filterdAlbums}
                             keyExtractor={item => item.id.toString()}
