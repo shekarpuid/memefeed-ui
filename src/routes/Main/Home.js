@@ -34,7 +34,7 @@ const Home = (props) => {
     useEffect(() => {
         fetchData()
         const res = AsyncStorage.getItem('posts')
-        console.log("Log fetchData")
+        // console.log("Log fetchData")
         // const jsonValue = JSON.parse(res)
         // alert(JSON.stringify(res))
     }, [])
@@ -69,7 +69,7 @@ const Home = (props) => {
         formData.append('from', start)
         formData.append('to', end)
         formData.append('user_id', user.data.session_id)
-        console.log("fetch more formdata: ", JSON.stringify(formData))
+        // console.log("fetch more formdata: ", JSON.stringify(formData))
 
         const api = `${env.baseUrl}posts/postlist`
         fetch(api, {

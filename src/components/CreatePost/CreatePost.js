@@ -28,6 +28,7 @@ const CreatePost = props => {
   const userImage = `${env.baseUrl}${props.user.data.profile_image}`
   const [loaded, setLoaded] = useState(false)
 
+  // =============================================================== HASHTAG_FORMATTER
   const HASHTAG_FORMATTER = string => {
     return string.split(/((?:^|\s)(?:#[a-z\d-]+))/gi).filter(Boolean).map((v, i) => {
       if (v.includes('#')) {
@@ -38,6 +39,7 @@ const CreatePost = props => {
     })
   };
 
+  // ========================================================================= useEffect
   useEffect(() => {
     if (post !== undefined) {
       // alert(JSON.stringify(props.post))
@@ -53,10 +55,12 @@ const CreatePost = props => {
     }
   }, [])
 
+  // ======================================================== Post types value change method
   function onValueChange2(value) {
     setState({ ...state, selected2: value, })
   }
 
+  // ======================================================== Submit post or update post handler
   async function handlePost() {
     const { selected2, imagedata, description } = await state
     if (selected2 === '' || selected2 === 'select') {
@@ -102,6 +106,7 @@ const CreatePost = props => {
       }
     }
     
+    // console.log("requestObj post: ", JSON.stringify(requestObj))
     await props.onPostSend(requestObj)
     props.setEditing(false)
     props.setNewPost(true)
@@ -112,41 +117,7 @@ const CreatePost = props => {
     // props.setEnd(9)
   }
 
-  const handleImageUpload = () => {
-    const options = {
-      title: 'Select Image',
-      // customButtons: [{name: 'fb', title: 'Choose Photo from Facebook'}],
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    }
-    ImagePicker.showImagePicker(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker')
-      } else if (response.error) {
-        setState({ ...state, avatarSource: '' })
-        console.log('ImagePicker Error: ', response.error)
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton)
-      } else {
-        const source = { uri: response.uri }
-        // console.log(source)
-        // console.log(response.data)
-
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/png;base64,' + response.data } 
-
-        setState({
-          ...state,
-          avatarSource: source,
-          imagedata: response.data
-        })
-        setPostImageSelected(true)
-      }
-    })
-  }
-
+  // ======================================================== Render post types
   function renderPickerItems() {
     if (props.postTypes.data.length) {
       return props.postTypes.data.map((item) => {
@@ -155,7 +126,6 @@ const CreatePost = props => {
     }
     return null
   }
-
 
   const onChangeHandler = async (text) => {
     let hashtagText = await HASHTAG_FORMATTER(text)
@@ -211,8 +181,6 @@ const CreatePost = props => {
 
   return (
     <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-      
-      {loaded && <Loader />}
       <H3
         style={{
           alignSelf: 'center',
@@ -225,9 +193,6 @@ const CreatePost = props => {
 
       {/* <View style={{flexDirection: 'row'}}>{HASHTAG_FORMATTER("Let's #Tweet on Twitter")}</View> */}
 
-      {/* Upload image  */}
-      {/* <TouchableOpacity onPress={handleImageUpload}
-        style={{ height: 200, width: '85%', marginTop: 20, borderRadius: 5 }}> */}
         <View style={{ height: 200, width: '85%', marginVertical: 20, borderRadius: 5 }}>
         <Image
           source={
@@ -248,12 +213,7 @@ const CreatePost = props => {
 
       <Item
         picker
-        style={{
-          backgroundColor: '#00639c',
-          width: '85%',
-          marginTop: 0,
-          borderRadius: 5,
-        }}>
+        style={{backgroundColor: '#00639c',width: '85%',marginTop: 0,borderRadius: 5,}}>
         <Picker
           mode="dropdown"
           iosIcon={<Icon name="arrow-down" />}
@@ -268,21 +228,11 @@ const CreatePost = props => {
         </Picker>
       </Item>
       <View
-        style={{
-          backgroundColor: '#808080',
-          width: '100%',
-          height: 1,
-          marginTop: 20
-        }}>
+        style={{backgroundColor: '#808080',width: '100%',height: 1,marginTop: 20}}>
         {/* <View style={{height:90,color:'red',width:"100%"}}></View> */}
       </View>
       <View
-        style={{
-          flex: 1,
-          flexDirection: 'row',
-          paddingLeft: 5,
-          paddingRight: 5,
-        }}>
+        style={{flex: 1,flexDirection: 'row',paddingLeft: 5,paddingRight: 5,}}>
         <Image
           // source={GrayMan}
           source={props.user.data.profile_image !== '' ? { uri: userImage } : GrayMan
@@ -314,18 +264,13 @@ const CreatePost = props => {
       <Button
         rounded
         onPress={() => handlePost()}
-        style={{
-          paddingLeft: 10,
-          paddingRight: 10,
-          alignSelf: 'center',
-          marginTop: 20,
-          backgroundColor: '#00639c',
-        }}>
+        style={{paddingLeft: 10,paddingRight: 10,alignSelf: 'center',marginTop: 20,backgroundColor: '#00639c'}}>
         <Text>Post</Text>
       </Button>
       {props.postLoading ? (
         <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} />
       ) : null}
+      {loaded && <Loader />}
     </ScrollView>
   )
 }
