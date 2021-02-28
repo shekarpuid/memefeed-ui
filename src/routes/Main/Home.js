@@ -30,6 +30,7 @@ const Home = (props) => {
     const [editing, setEditing] = useState(false)
     const [menuId, setMenuId] = useState(0)
     const [newPost, setNewPost] = useState(0)
+    const postsScrollViewRef = useRef()
 
     useEffect(() => {
         fetchData()
@@ -39,23 +40,18 @@ const Home = (props) => {
         // alert(JSON.stringify(res))
     }, [])
 
-    // useEffect(() => {
-    //     if (newPost) {
-    //         console.log("setNewPost: ", newPost)
-    //         fetchData()
-    //         setNewPost(false)
-    //     }
-    // }, [newPost])
-
-
+    // ======================================================== Render posts fn
     const renderPosts = () => {
         if (error) return <Text style={{ marginVertical: 25, alignSelf: 'center', color: 'red' }}>Unable to display memes.</Text>
         if (data !== null && data.status === 0) return <Text style={styles.noData}>No memes found to display.</Text>
-        return data.map((post) => <Post key={post.id} post={post} user={user} start={start} end={end} data={data}
+        return data.map((post, index) => <Post key={index} post={post} user={user} start={start} end={end} data={data}
             setData={setData} setShowPosts={setShowPosts} setEditing={setEditing} menuId={menuId} setMenuId={setMenuId} />)
     }
 
+    // ======================================================== Fetch posts fn
     const fetchData = () => {
+        // console.log("fetch posts")
+        // alert('start' + start + 'end' + end)
         setIsLoading(true)
         const username = 'memefeed'
         const password = 'Connect12345!'
@@ -90,10 +86,10 @@ const Home = (props) => {
                     setNewPost(false)
                 } else {
                     setData(data.concat(resJson))
+                    // setData([...data, resJson])
                     // const jsonValue = JSON.stringify(resJson)
                     // AsyncStorage.setItem('posts', JSON.stringify(jsonValue))
 
-                    // console.log(JSON.stringify(jsonValue))
                     setStart(start + 10)
                     setEnd(end + 10)
                     setPage(page + 1)
@@ -109,8 +105,8 @@ const Home = (props) => {
                 alert(err)
                 setNewPost(false)
             })
+            // console.log(JSON.stringify(data.length))
     }
-    const postsScrollViewRef = useRef()
 
     const newPostFetch = () => {
         postsScrollViewRef.current?.scrollTo({
@@ -174,10 +170,11 @@ const Home = (props) => {
         // alert("newPostFetch")
     }
 
+    // ======================================================== Load more fn
     const handleLoadMore = () => {
         // alert("Load more")
         setIsLoading(true)
-        fetchData()
+        if(!isLoading) fetchData()
     }
 
     const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
@@ -186,16 +183,14 @@ const Home = (props) => {
             contentSize.height - paddingToBottom;
     }
 
+    // ======================================================= Refresh fn
     const onRefresh = React.useCallback(() => {
         setRefreshing(true)
         setLoading(true)
         fetchData()
 
-        wait(1600).then(() => setRefreshing(false))
+        wait(500).then(() => setRefreshing(false))
     }, [])
-
-
-
 
     return (
         <>
@@ -205,18 +200,27 @@ const Home = (props) => {
                     postTypes={postTypes} user={user} fetchData={fetchData} editing={editing} setEditing={setEditing}
                     setNewPost={setNewPost} newPostFetch={newPostFetch}
                 /> :
+                // <FlatList
+                //     data={data}
+                //     keyExtractor={item => item.id.toString()}
+                //     renderItem={({ item }) => {
+                //         return <Post key={item.id} post={item} user={user} start={start} end={end} data={data}
+                //         setData={setData} setShowPosts={setShowPosts} setEditing={setEditing} menuId={menuId} setMenuId={setMenuId} />
+                //     }}
+                //     bounces={false}
+                //     onEndReached={() => handleLoadMore()}
+                //     onEndReachedThreshold={0.2}
+                // />
                 <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => onRefresh()} />}
                     onScroll={({ nativeEvent }) => {
                         if (isCloseToBottom(nativeEvent)) {
-                            if (!noData) {
+                            if (!noData || !isLoading) {
                                 handleLoadMore()
                             }
                         }
                     }}
-                    scrollEventThrottle={1}
-                    // onPress={() => setMenuId(0)}
+                    scrollEventThrottle={0.2} bounces={false}
                     ref={postsScrollViewRef}
-                // onContentSizeChange={() => postsScrollViewRef.current.scrollToEnd({ animated: true })}
                 >
                     <>
                         {loading ? <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} /> : null}
