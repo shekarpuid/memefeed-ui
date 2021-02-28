@@ -9,19 +9,19 @@ import { ProfilePosts } from './Profile/ProfilePosts'
 import { ProfileAlbums } from './Profile/ProfileAlbums'
 
 const Profile = (props) => {
-	const { setSelectedTabIndex, getaActive, user } = props
+	const { setSelectedTabIndex, getaActive, user, postTypes, onHomePostSend, showPosts, setShowPosts } = props
 	const imageUrl = `${env.baseUrl}${user.data.profile_image}`
 	const [posts, setPosts] = useState(false)
 	const [albums, setAlbums] = useState(false)
-	const {height, width} = Dimensions.get('window')
-    const [filterMenu, setFilterMenu] = useState(false)
+	const { height, width } = Dimensions.get('window')
+	const [filterMenu, setFilterMenu] = useState(false)
 
 	useEffect(() => {
 		// console.log(JSON.stringify(user))
 		// console.log(user.data.profile_image)
-		if(user.data.user_type === 'Creator'){
+		if (user.data.user_type === 'Creator') {
 			setPosts(true)
-		}else{
+		} else {
 			setAlbums(true)
 		}
 	}, [])
@@ -90,35 +90,43 @@ const Profile = (props) => {
 
 	return (
 		<Container>
-		{/* <Pressable onPress={() => {
+			{/* <Pressable onPress={() => {
 			if(filterMenu)
 				setFilterMenu(false)
 			}} style={{flex: 1}}> */}
-			<View  style={{flex: 1}}>
-				{renderHeader()}
-				{/* tabs titles */}
-				<View style={styles.tabsHeaders}>
-					{user.data.user_type === 'Creator' &&
-						<TouchableOpacity style={styles.pTabLink} onPress={() => {
-							setPosts(true)
-							setAlbums(false)
-						}}>
-							<Text style={[styles.pTabLinkText, {color: posts ? '#00639c' : '#333', fontWeight: posts ? 'bold' : 'normal'}]}>Posts</Text>
-						</TouchableOpacity>
-					}
-					<TouchableOpacity style={styles.pTabLink} onPress={() => {
-							setPosts(false)
-							setAlbums(true)
-						}}>
-						<Text style={[styles.pTabLinkText, {color: albums ? '#00639c' : '#333', fontWeight: albums ? 'bold' : 'normal'}]}>Albums</Text>
-					</TouchableOpacity>
-				</View>
-			
+			<View style={{ flex: 1 }}>
+				{showPosts ? null :
+					<>
+						{renderHeader()}
+						{/* tabs titles */}
+						<View style={styles.tabsHeaders}>
+							{user.data.user_type === 'Creator' &&
+								<TouchableOpacity style={styles.pTabLink} onPress={() => {
+									setPosts(true)
+									setAlbums(false)
+								}}>
+									<Text style={[styles.pTabLinkText, { color: posts ? '#00639c' : '#333', fontWeight: posts ? 'bold' : 'normal' }]}>Posts</Text>
+								</TouchableOpacity>
+							}
+							<TouchableOpacity style={styles.pTabLink} onPress={() => {
+								setPosts(false)
+								setAlbums(true)
+							}}>
+								<Text style={[styles.pTabLinkText, { color: albums ? '#00639c' : '#333', fontWeight: albums ? 'bold' : 'normal' }]}>Albums</Text>
+							</TouchableOpacity>
+						</View>
+					</>
+				}
+
 				{/* Child Comps */}
 				<View>
-					{ posts ? 
-						<ProfilePosts user={user} height={height} width={width} /> : 
-						<ProfileAlbums user={user}height={height} width={width} filterMenu={filterMenu} setFilterMenu={setFilterMenu} /> 
+					{posts ?
+						<ProfilePosts user={user} height={height} width={width} /> :
+						<ProfileAlbums user={user} height={height} width={width}
+							filterMenu={filterMenu} setFilterMenu={setFilterMenu}
+							postTypes={postTypes} onHomePostSend={onHomePostSend}
+							showPosts={showPosts} setShowPosts={setShowPosts}
+						/>
 					}
 				</View>
 			</View>

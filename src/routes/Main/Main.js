@@ -83,7 +83,7 @@ const Main = (props) => {
         // alert('Succesfully Created New Post')
         handleFetchPosts()
         setShowPosts(false)
-        setSelectedTabIndex(0)
+        // setSelectedTabIndex(0)
     }
 
     function renderTabs() {
@@ -100,7 +100,12 @@ const Main = (props) => {
             )
         if (selectedTabIndex === 2) return <Search />
         if (selectedTabIndex === 3) return <Notification />
-        if (selectedTabIndex === 4) return <Profile user={user} setSelectedTabIndex={setSelectedTabIndex} getaActive={getaActive} />
+        if (selectedTabIndex === 4) return <Profile user={user} 
+                setSelectedTabIndex={setSelectedTabIndex} getaActive={getaActive} 
+                onHomePostSend={(data) => handlePostCreate(data)}
+                postTypes={postTypes}
+                showPosts={showPosts} setShowPosts={setShowPosts}
+            />
         return <HashTags />
     }
 
