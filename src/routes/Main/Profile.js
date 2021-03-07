@@ -7,6 +7,7 @@ import styles from '../../styles/common'
 import { env } from '../../env'
 import { ProfilePosts } from './Profile/ProfilePosts'
 import { ProfileAlbums } from './Profile/ProfileAlbums'
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 
 const Profile = (props) => {
 	const { setSelectedTabIndex, getaActive, user, postTypes, onHomePostSend, showPosts, setShowPosts } = props
@@ -15,6 +16,7 @@ const Profile = (props) => {
 	const [albums, setAlbums] = useState(false)
 	const { height, width } = Dimensions.get('window')
 	const [filterMenu, setFilterMenu] = useState(false)
+	const [menuId, setMenuId] = useState(0)
 
 	useEffect(() => {
 		// console.log(JSON.stringify(user))
@@ -94,43 +96,54 @@ const Profile = (props) => {
 			if(filterMenu)
 				setFilterMenu(false)
 			}} style={{flex: 1}}> */}
-			<View style={{ flex: 1 }}>
-				{showPosts ? null :
-					<>
-						{renderHeader()}
-						{/* tabs titles */}
-						<View style={styles.tabsHeaders}>
-							{user.data.user_type === 'Creator' &&
+			<Pressable style={{ flex: 1 }} onPress={() => {
+				if (menuId > 0) setMenuId(0)
+			}}>
+				<View style={{ flex: 1 }}>
+					{showPosts ? null :
+						<>
+							{renderHeader()}
+							{/* tabs titles */}
+							<View style={styles.tabsHeaders}>
+								{user.data.user_type === 'Creator' &&
+									<TouchableOpacity style={styles.pTabLink} onPress={() => {
+										setPosts(true)
+										setAlbums(false)
+									}}>
+										<Text style={[styles.pTabLinkText, { color: posts ? '#00639c' : '#333', fontWeight: posts ? 'bold' : 'normal' }]}>Posts</Text>
+									</TouchableOpacity>
+								}
 								<TouchableOpacity style={styles.pTabLink} onPress={() => {
-									setPosts(true)
-									setAlbums(false)
+									setPosts(false)
+									setAlbums(true)
 								}}>
-									<Text style={[styles.pTabLinkText, { color: posts ? '#00639c' : '#333', fontWeight: posts ? 'bold' : 'normal' }]}>Posts</Text>
+									<Text style={[styles.pTabLinkText, { color: albums ? '#00639c' : '#333', fontWeight: albums ? 'bold' : 'normal' }]}>Albums</Text>
 								</TouchableOpacity>
-							}
-							<TouchableOpacity style={styles.pTabLink} onPress={() => {
-								setPosts(false)
-								setAlbums(true)
-							}}>
-								<Text style={[styles.pTabLinkText, { color: albums ? '#00639c' : '#333', fontWeight: albums ? 'bold' : 'normal' }]}>Albums</Text>
-							</TouchableOpacity>
-						</View>
-					</>
-				}
-
-				{/* Child Comps */}
-				<View>
-					{posts ?
-						<ProfilePosts user={user} height={height} width={width} /> :
-						<ProfileAlbums user={user} height={height} width={width}
-							filterMenu={filterMenu} setFilterMenu={setFilterMenu}
-							postTypes={postTypes} onHomePostSend={onHomePostSend}
-							showPosts={showPosts} setShowPosts={setShowPosts}
-						/>
+							</View>
+						</>
 					}
+
+					{/* Child Comps */}
+					<View>
+						{posts ?
+							<ProfilePosts
+								user={user} height={height} width={width}
+								// filterMenu={filterMenu} setFilterMenu={setFilterMenu}
+								postTypes={postTypes} onHomePostSend={onHomePostSend}
+								showPosts={showPosts} setShowPosts={setShowPosts}
+								menuId={menuId} setMenuId={setMenuId}
+							/> :
+							<ProfileAlbums
+								user={user} height={height} width={width}
+								filterMenu={filterMenu} setFilterMenu={setFilterMenu}
+								postTypes={postTypes} onHomePostSend={onHomePostSend}
+								showPosts={showPosts} setShowPosts={setShowPosts}
+								setPosts={setPosts} menuId={menuId} setMenuId={setMenuId}
+							/>
+						}
+					</View>
 				</View>
-			</View>
-			{/* </Pressable> */}
+			</Pressable>
 		</Container>
 	)
 }

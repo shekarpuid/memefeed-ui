@@ -11,7 +11,7 @@ import CreatePost from '../../../components/CreatePost/CreatePost'
 
 export const ProfileAlbums = (props) => {
     const { user, height, width, filterMenu, setFilterMenu, postTypes, onHomePostSend,
-        showPosts, setShowPosts
+        showPosts, setShowPosts, setPosts, menuId, setMenuId
     } = props
     const formData = new FormData()
     formData.append('user_id', user.data.session_id)
@@ -25,16 +25,19 @@ export const ProfileAlbums = (props) => {
     const [loadmore, setLoadmore] = useState(false)
     const [noData, setNoData] = useState('')
 
-    const [menuId, setMenuId] = useState(0)
+    // const [menuId, setMenuId] = useState(0)
     const [editing, setEditing] = useState(false)
     const [newPost, setNewPost] = useState(0)
-    const [loadingList, setLoadingList] = useState(false)
+    const [loadingList, setLoadingList] = useState(false);
 
     useEffect(() => {
         getAlbums()
         getAlbumNames()
         // console.log(JSON.stringify('albums ', albums))
         // console.log(JSON.stringify('albums ', albumNames))
+        return () => {
+            // setPosts(false)
+        }
     }, [])
 
     const getAlbumNames = async () => {

@@ -205,9 +205,27 @@ const CreatePost = props => {
         </View>
       {/* </TouchableOpacity> */}
 
-      <View style={[{flexDirection: 'row', justifyContent: 'space-between', width: '85%'}]}>
-        <Button full rounded textLight onPress={() => openCameraIHandler()} style={{fontSize: 10}}>OPEN CAMERA</Button>
-        <Button full rounded textLight onPress={() => openGalleryHandler()}>OPEN GALLERY</Button>
+      <View style={[{flexDirection: 'row', justifyContent: 'space-between', width: '85%', marginBottom: 20}]}>
+        <TouchableOpacity 
+         onPress={() => openCameraIHandler()}
+          style={{
+            paddingVertical: 15, paddingHorizontal: 20, backgroundColor: '#00639c',
+            borderRadius: 30, alignSelf: 'flex-start'
+          }}
+        >
+          <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 13}}>OPEN CAMERA</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+         onPress={() => openGalleryHandler()}
+          style={{
+            paddingVertical: 15, paddingHorizontal: 20, backgroundColor: '#00639c',
+            borderRadius: 30, alignSelf: 'flex-end'
+          }}
+        >
+          <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 13}}>OPEN GALLERY</Text>
+        </TouchableOpacity>
+        {/* <Button full rounded textLight onPress={() => openCameraIHandler()} style={{fontSize: 10}}>OPEN CAMERA</Button>
+        <Button full rounded textLight onPress={() => openGalleryHandler()}>OPEN GALLERY</Button> */}
         {/* <Button full rounded textLight style={styles.mb20} onPress={() => handleSubmit()}>SUBMIT</Button> */}
       </View>
 
@@ -216,13 +234,16 @@ const CreatePost = props => {
         style={{backgroundColor: '#00639c',width: '85%',marginTop: 0,borderRadius: 5,}}>
         <Picker
           mode="dropdown"
-          iosIcon={<Icon name="arrow-down" />}
-          style={{ width: '85%', color: '#fff', fontWeight: 'bold' }}
+          iosIcon={<Icon name="chevron-down" style={{color: '#fff', fontWeight: 'bold'}} />}
+          style={{ width: '83%', color: '#fff', fontWeight: 'bold' }}
+          itemStyle={{color: '#fff'}}
           placeholder="Select type Post"
           placeholderStyle={{ color: '#fff' }}
-          placeholderIconColor="red"
+          placeholderIconColor="#fff"
           selectedValue={state.selected2}
-          onValueChange={onValueChange2}>
+          onValueChange={onValueChange2}
+          textStyle={{ color: "#fff", fontWeight: 'bold' }}
+          >
           <Picker.Item label='Select Post Type' value='select' />
           {renderPickerItems()}
         </Picker>
@@ -256,17 +277,26 @@ const CreatePost = props => {
           backgroundColor: '#808080',
           width: '100%',
           height: 1,
-          marginTop: 20,
+          marginTop: 20
         }}>
         {/* <View style={{height:90,color:'red',width:"100%"}}></View> */}
         {/* <Textarea rowSpan={5} bordered placeholder="Textarea" /> */}
       </View>
-      <Button
+      <TouchableOpacity 
+         onPress={() => handlePost()}
+          style={{
+            paddingVertical: 12, paddingHorizontal: 25, backgroundColor: '#00639c',
+            borderRadius: 30, alignSelf: 'center',marginVertical: 20
+          }}
+        >
+          <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 16}}>Post</Text>
+        </TouchableOpacity>
+      {/* <Button
         rounded
         onPress={() => handlePost()}
         style={{paddingLeft: 10,paddingRight: 10,alignSelf: 'center',marginTop: 20,backgroundColor: '#00639c'}}>
         <Text>Post</Text>
-      </Button>
+      </Button> */}
       {props.postLoading ? (
         <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} />
       ) : null}

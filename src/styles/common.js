@@ -46,7 +46,7 @@ export default StyleSheet.create({
     moreMenuWrap: {paddingVertical: 7,
         position: 'absolute', top: 43, right: 10, backgroundColor: '#fff',
         shadowColor: '#ddd', shadowOpacity: 0.25, shadowRadius: 5,
-        shadowOffset: { width: 0, height: 5 }, elevation: 5, borderColor: '#ddd', borderWidth: 1, borderStyle: 'solid'
+        shadowOffset: { width: 0, height: 5 }, zIndex: 5, elevation: 5, borderColor: '#ddd', borderWidth: 1, borderStyle: 'solid'
     },
     triangle: {
         width: 10, height: 10, position: "absolute", top: -10, right: 12,
