@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Text, Thumbnail } from 'native-base'
 import { connect } from 'react-redux'
-import { View, Image, TouchableOpacity, Platform } from 'react-native'
+import { View, Image, TouchableOpacity, Platform, Pressable } from 'react-native'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 import { env } from '../env'
 import { encode } from 'base-64'
@@ -213,7 +213,7 @@ const Post = ({ post, user, start, end, data, setData, setShowPosts, dispatch, s
 
 
             {/* more menu */}
-            {menuId === post.id ?
+            {menuId === post.id ? 
                 <View style={styles.moreMenuWrap}>
                     <View style={styles.triangle}></View>
                     <View style={styles.triangle2}></View>
