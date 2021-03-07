@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Container, Text, Thumbnail, Icon } from 'native-base'
-import { Dimensions, TouchableOpacity, View, Pressable } from 'react-native'
+import { Dimensions, TouchableOpacity, View } from 'react-native'
 import defaultAvatar from '../../../assets/grayman.png'
 import Ionicon from 'react-native-vector-icons/dist/Ionicons'
 import styles from '../../styles/common'
 import { env } from '../../env'
 import { ProfilePosts } from './Profile/ProfilePosts'
 import { ProfileAlbums } from './Profile/ProfileAlbums'
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 
 const Profile = (props) => {
 	const { setSelectedTabIndex, getaActive, user, postTypes, onHomePostSend, showPosts, setShowPosts } = props
@@ -92,14 +91,9 @@ const Profile = (props) => {
 
 	return (
 		<Container>
-			{/* <Pressable onPress={() => {
-			if(filterMenu)
-				setFilterMenu(false)
-			}} style={{flex: 1}}> */}
-			<Pressable style={{ flex: 1 }} onPress={() => {
+				<View style={{ flex: 1 }} onStartShouldSetResponder={() => {
 				if (menuId > 0) setMenuId(0)
 			}}>
-				<View style={{ flex: 1 }}>
 					{showPosts ? null :
 						<>
 							{renderHeader()}
@@ -143,7 +137,6 @@ const Profile = (props) => {
 						}
 					</View>
 				</View>
-			</Pressable>
 		</Container>
 	)
 }
