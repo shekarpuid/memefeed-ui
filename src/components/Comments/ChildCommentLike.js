@@ -24,7 +24,7 @@ export const ChildCommentLike = ({ childComment, user, selectedVote, setSelected
             myHeaders.append('Content-Type', 'multipart/form-data')
             myHeaders.append('Authorization', `Basic ${encode(`${username}:${password}`)}`)
 
-            let formData = new FormData() 
+            let formData = new FormData()
             formData.append('id', id)
             formData.append('type', 'upvote')
             formData.append('up_vote', user.data.session_id)
@@ -35,25 +35,37 @@ export const ChildCommentLike = ({ childComment, user, selectedVote, setSelected
                 method: 'POST',
                 headers: myHeaders,
                 body: formData
-            }) 
+            })
             let responseJson = await res.json()
             // alert(JSON.stringify(responseJson))
             setResponse(responseJson)
         } catch (err) {
-            console.log('err', err.toString()) 
+            console.log('err', err.toString())
         }
     }
 
     return (
         <TouchableOpacity
             onPress={() => handleLike(childComment.id)}
-            disabled={Object.keys(response).length > 0 && selectedVote === 'like' ? true : false}
-            // disabled={selectedVote === 'like' ? true : false}
+            disabled={
+                Object.keys(response).length > 0 && selectedVote === 'like' ? true
+                    : Object.keys(response).length > 0 && selectedVote === 'dislike' ? false
+                        : childComment.up_vote_user_id === user.data.session_id ? true
+                            : false
+            }
+            // disabled={Object.keys(response).length > 0 && selectedVote === 'like' ? true : false}
             style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 20 }}>
-            <Image source={
-                    Object.keys(response).length > 0 && selectedVote === 'like' ? UpColor : Up
-                // selectedVote === '' || selectedVote === 'dislike' ? Up : UpColor
-                } resizeMode="stretch" style={styles.childCommentFooterImage} />
+            <Image
+                source={
+                    Object.keys(response).length > 0 && selectedVote === 'like' ? UpColor
+                        : Object.keys(response).length > 0 && selectedVote === 'dislike' ? Up
+                            : childComment.up_vote_user_id === user.data.session_id ? UpColor
+                                : Up
+                }
+                // source={
+                //         Object.keys(response).length > 0 && selectedVote === 'like' ? UpColor : Up
+                //     } 
+                resizeMode="stretch" style={styles.childCommentFooterImage} />
             <View>
                 <Text style={{ marginLeft: 2 }}>
                     {Object.keys(response).length > 0 && response.up_vote_count == 0 ? null : Object.keys(response).length > 0 && response.up_vote_count > 0 ? response.up_vote_count : childComment.up_vote_count == '0' ? null : childComment.up_vote_count}

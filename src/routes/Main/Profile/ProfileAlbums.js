@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ActivityIndicator, FlatList, Platform, TouchableOpacity, StyleSheet } from 'react-native'
-import { Picker, Item } from 'native-base'
+import { View, Text, ActivityIndicator, FlatList, Platform, TouchableOpacity } from 'react-native'
 import UsePostFetch from '../../../hooks/UsePostFetch'
 import styles from '../../../styles/common'
 import { httpService } from '../../../utils'
@@ -28,26 +27,35 @@ export const ProfileAlbums = (props) => {
     // const [menuId, setMenuId] = useState(0)
     const [editing, setEditing] = useState(false)
     const [newPost, setNewPost] = useState(0)
-    const [loadingList, setLoadingList] = useState(false);
+    const [loadingList, setLoadingList] = useState(false)
+
+    const ac = new AbortController()
+    const signal = ac.signal
+
+    let isMount = true
 
     useEffect(() => {
+        
         getAlbums()
         getAlbumNames()
         // console.log(JSON.stringify('albums ', albums))
         // console.log(JSON.stringify('albums ', albumNames))
         return () => {
             // setPosts(false)
+            ac.abort()
+            isMount = false
         }
     }, [])
 
     const getAlbumNames = async () => {
-        await httpService('album/album_name_list', 'POST', formData)
+        await httpService('album/album_name_list', 'POST', formData,  {signal: signal})
             .then(res => res.json())
             .then(json => {
                 if (json.status === 0) {
                     setNoData(json.msg)
                 } else {
-                    setAlbumNames(json.data)
+                    if(isMount) setAlbumNames(json.data)
+                    
                 }
                 // console.log("Albums: ", JSON.stringify(json))
             })
@@ -56,13 +64,15 @@ export const ProfileAlbums = (props) => {
 
     const getAlbums = async () => {
         setLoadingList(true)
-        await httpService('album/album_list', 'POST', formData)
+        await httpService('album/album_list', 'POST', formData,  {signal: signal})
             .then(res => res.json())
             .then(json => {
-                setAlbums(json.data)
-                setFilterdAlbums(json.data)
-                // console.log("Albums: ", JSON.stringify(json))
-                setLoadingList(false)
+                if(isMount){
+                    setAlbums(json.data)
+                    setFilterdAlbums(json.data)
+                    // console.log("Albums: ", JSON.stringify(json))
+                    setLoadingList(false)
+                }
             })
             .catch(error => {
                 console.log(error)

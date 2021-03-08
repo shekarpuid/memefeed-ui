@@ -8,7 +8,7 @@ import DownColor from '../../../assets/Down_Arrow_Colour.png'
 import styles from '../../styles/common'
 
 export const CommentDisLike = ({ comment, user, selectedVote, setSelectedVote, response, setResponse }) => {
-    
+
     const handleDisLike = async (id) => {
         setSelectedVote('dislike')
 
@@ -19,7 +19,7 @@ export const CommentDisLike = ({ comment, user, selectedVote, setSelectedVote, r
             myHeaders.append('Content-Type', 'multipart/form-data')
             myHeaders.append('Authorization', `Basic ${encode(`${username}:${password}`)}`)
 
-            let formData = new FormData() 
+            let formData = new FormData()
             formData.append('id', id)
             formData.append('type', 'downvote')
             formData.append('up_vote', 0)
@@ -30,25 +30,37 @@ export const CommentDisLike = ({ comment, user, selectedVote, setSelectedVote, r
                 method: 'POST',
                 headers: myHeaders,
                 body: formData
-            }) 
+            })
             let responseJson = await res.json()
             // alert(JSON.stringify(responseJson))
             setResponse(responseJson)
         } catch (err) {
-            console.log('err', err.toString()) 
+            console.log('err', err.toString())
         }
     }
-    
+
     return (
         <TouchableOpacity
             onPress={() => handleDisLike(comment.id)}
-            disabled={Object.keys(response).length > 0 && selectedVote === 'dislike' ? true : false}
-            // disabled={selectedVote === 'dislike' ? true : false}
+            disabled={
+                Object.keys(response).length > 0 && selectedVote === 'dislike' ? true
+                    : Object.keys(response).length > 0 && selectedVote === 'like' ? false
+                        : comment.down_vote_user_id === user.data.session_id ? true
+                            : false
+            }
+            // disabled={Object.keys(response).length > 0 && selectedVote === 'dislike' ? true : false}
             style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 20 }}>
-            <Image source={
-                    Object.keys(response).length > 0 && selectedVote === 'dislike' ? DownColor : Down
-                // selectedVote === '' || selectedVote === 'dislike' ? Up : DownColor
-                } resizeMode="stretch" style={styles.commentFooterImage} />
+            <Image
+                source={
+                    Object.keys(response).length > 0 && selectedVote === 'dislike' ? DownColor
+                        : Object.keys(response).length > 0 && selectedVote === 'like' ? Down
+                            : comment.down_vote_user_id === user.data.session_id ? DownColor
+                                : Down
+                }
+                // source={
+                //     Object.keys(response).length > 0 && selectedVote === 'dislike' ? DownColor : Down
+                // }
+                resizeMode="stretch" style={styles.commentFooterImage} />
             <View>
                 <Text style={{ marginLeft: 2 }}>
                     {response.down_vote_count == 0 ? null : Object.keys(response).length > 0 ? response.down_vote_count : comment.down_vote_count == 0 || response.down_vote_count == 0 ? null : comment.down_vote_count}

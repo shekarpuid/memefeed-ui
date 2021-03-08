@@ -46,11 +46,25 @@ export const CommentLike = ({ comment, user, selectedVote, setSelectedVote, resp
     return (
         <TouchableOpacity
             onPress={() => handleLike(comment.id)}
-            disabled={Object.keys(response).length > 0 && selectedVote === 'like' ? true : false}
+            disabled={
+                Object.keys(response).length > 0 && selectedVote === 'like' ? true
+                    : Object.keys(response).length > 0 && selectedVote === 'dislike' ? false
+                        : comment.up_vote_user_id === user.data.session_id ? true
+                            : false
+            }
+            // disabled={Object.keys(response).length > 0 && selectedVote === 'like' ? true : false}
             style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 20 }}>
-            <Image source={
-                Object.keys(response).length > 0 && selectedVote === 'like' ? UpColor : Up
-            } resizeMode="stretch" style={styles.commentFooterImage} />
+            <Image 
+            source={
+                Object.keys(response).length > 0 && selectedVote === 'like' ? UpColor
+                    : Object.keys(response).length > 0 && selectedVote === 'dislike' ? Up
+                        : comment.up_vote_user_id === user.data.session_id ? UpColor
+                            : Up
+            }
+            // source={
+            //     Object.keys(response).length > 0 && selectedVote === 'like' ? UpColor : Up
+            // } 
+            resizeMode="stretch" style={styles.commentFooterImage} />
             <View>
                 <Text style={{ marginLeft: 2 }}>
                     {Object.keys(response).length > 0 && response.up_vote_count == 0 ? null : Object.keys(response).length > 0 && response.up_vote_count > 0 ? response.up_vote_count : comment.up_vote_count == '0' ? null : comment.up_vote_count}

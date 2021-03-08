@@ -17,10 +17,18 @@ const PostSaveModal = (props) => {
     const [value, setValue] = useState('')
     const { width, height } = useWindowDimensions()
 
+    const ac = new AbortController()
+    const signal = ac.signal
+    let isMount = true
+
     useEffect(() => {
         fetchAlbumNameList()
         return () => {
             setSelected('select')
+            setAlbumNames([])
+            // fetchAlbumNameList.cancelRequest()
+            ac.abort()
+            isMount = false
         }
     }, [])
 
@@ -40,7 +48,7 @@ const PostSaveModal = (props) => {
             formData.append('user_id', user.data.session_id)
 
             const url = `${env.baseUrl}album/album_name_list` // get album_name_list api
-            const response = await fetch(url, {
+            const response = await fetch(url, {signal: signal}, {
                 method: 'POST',
                 headers: myHeaders,
                 body: formData
@@ -49,7 +57,7 @@ const PostSaveModal = (props) => {
             // alert(JSON.stringify(res))
             // console.log("album_name_list: " + JSON.stringify(res.data))
             // alert(res.msg)
-            setAlbumNames(res.data)
+            if (isMount) setAlbumNames(res.data)
         } catch (error) {
             // alert(error)
             console.error(error)

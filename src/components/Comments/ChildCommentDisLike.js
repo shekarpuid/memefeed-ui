@@ -43,11 +43,25 @@ export const ChildCommentDisLike = ({ childComment, user, selectedVote, setSelec
     return (
         <TouchableOpacity
             onPress={() => handleDisLike(childComment.id)}
-            disabled={Object.keys(response).length > 0 && selectedVote === 'dislike' ? true : false}
+            disabled={
+                Object.keys(response).length > 0 && selectedVote === 'dislike' ? true
+                    : Object.keys(response).length > 0 && selectedVote === 'like' ? false
+                        : childComment.down_vote_user_id === user.data.session_id ? true
+                            : false
+            }
+            // disabled={Object.keys(response).length > 0 && selectedVote === 'dislike' ? true : false}
             style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 20 }}>
-            <Image source={
-                    Object.keys(response).length > 0 && selectedVote === 'dislike' ? DownColor : Down
-                } resizeMode="stretch" style={styles.childCommentFooterImage} />
+            <Image 
+            source={
+                Object.keys(response).length > 0 && selectedVote === 'dislike' ? DownColor
+                    : Object.keys(response).length > 0 && selectedVote === 'like' ? Down
+                        : childComment.down_vote_user_id === user.data.session_id ? DownColor
+                            : Down
+            }
+            // source={
+            //         Object.keys(response).length > 0 && selectedVote === 'dislike' ? DownColor : Down
+            //     } 
+                resizeMode="stretch" style={styles.childCommentFooterImage} />
             <View>
                 <Text style={{ marginLeft: 2 }}>
                     {response.down_vote_count == 0 ? null : Object.keys(response).length > 0 ? response.down_vote_count : childComment.down_vote_count == 0 || response.down_vote_count == 0 ? null : childComment.down_vote_count}
