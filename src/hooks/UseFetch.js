@@ -7,6 +7,7 @@ const UseFetch = (url, method) => {
     const [error, setError] = useState(null)
     const [data, setData] = useState(null)
     // const [url, setUrl] = useState(initialUrl)
+    let isMount = true
 
     useEffect(() => {
         const username = 'memefeed'
@@ -24,14 +25,18 @@ const UseFetch = (url, method) => {
         })
             .then(res => res.json())
             .then(json => {
-                console.log("Usefetch Response: ", JSON.stringify(json))
-                setLoading(false)
-                setData(json)
+                if(isMount)
+                    // console.log("Usefetch Response: ", JSON.stringify(json))
+                    setLoading(false)
+                    setData(json)
             })
             .catch(error => {
                 setLoading(false)
                 setError(error)
             })
+
+    return () => isMount = false
+
     }, [url])
 
     return { loading, error, data }

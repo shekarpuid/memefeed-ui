@@ -50,8 +50,6 @@ const Home = (props) => {
 
     // ======================================================== Fetch posts fn
     const fetchData = () => {
-        // console.log("fetch posts")
-        // alert('start' + start + 'end' + end)
         setIsLoading(true)
         const username = 'memefeed'
         const password = 'Connect12345!'
@@ -65,7 +63,6 @@ const Home = (props) => {
         formData.append('from', start)
         formData.append('to', end)
         formData.append('user_id', user.data.session_id)
-        // console.log("fetch more formdata: ", JSON.stringify(formData))
 
         const api = `${env.baseUrl}posts/postlist`
         fetch(api, {
@@ -75,10 +72,8 @@ const Home = (props) => {
         })
             .then(res => res.json())
             .then(resJson => {
-                // alert('hi' + JSON.stringify(resJson))
-                // console.log('start', start, 'end', end)
+                console.log("Posts: ", JSON.stringify(resJson))
                 if (resJson.status === 0) {
-                    // console.log(JSON.stringify(resJson))
                     setData(data)
                     setIsLoading(false)
                     setLoading(false)
@@ -86,9 +81,6 @@ const Home = (props) => {
                     setNewPost(false)
                 } else {
                     setData(data.concat(resJson))
-                    // setData([...data, resJson])
-                    // const jsonValue = JSON.stringify(resJson)
-                    // AsyncStorage.setItem('posts', JSON.stringify(jsonValue))
 
                     setStart(start + 10)
                     setEnd(end + 10)
@@ -105,7 +97,6 @@ const Home = (props) => {
                 alert(err)
                 setNewPost(false)
             })
-            // console.log(JSON.stringify(data.length))
     }
 
     const newPostFetch = () => {
@@ -174,7 +165,7 @@ const Home = (props) => {
     const handleLoadMore = () => {
         // alert("Load more")
         setIsLoading(true)
-        if(!isLoading) fetchData()
+        if (!isLoading) fetchData()
     }
 
     const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {

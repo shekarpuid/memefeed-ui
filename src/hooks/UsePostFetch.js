@@ -6,8 +6,12 @@ const UsePostFetch = (url, method, formData) => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const [data, setData] = useState(null)
-    
+
+    const ac = new AbortController()
+    const signal = ac.signal
+
     useEffect(() => {
+        let isMount = true
         const username = 'memefeed'
         const password = 'Connect12345!'
         const myHeaders = new Headers()
@@ -21,17 +25,24 @@ const UsePostFetch = (url, method, formData) => {
             method: method,
             headers: myHeaders,
             body: formData
-        })
+        }, { signal: signal })
             .then(res => res.json())
             .then(json => {
-                console.log("Use Post Fetch Response: ", JSON.stringify(json))
-                setLoading(false)
-                setData(json)
+                if(isMount){
+                    // console.log("Use Post Fetch Response: ", JSON.stringify(json))
+                    setLoading(false)
+                    setData(json)
+                }
             })
             .catch(error => {
                 setLoading(false)
                 setError(error)
             })
+
+        return () => {
+            ac.abort()
+            isMount = false
+        }
     }, [url])
 
     return { loading, error, data }
