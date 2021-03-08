@@ -61,7 +61,7 @@ const ParentComment = ({ isVisible, setIsVisible, post, user }) => {
                     ref={scrollViewRef}
                     onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
                 >
-                    <View style={{ flex: 1, marginBottom: Platform.OS === 'ios' ? 50 : 20 }}>
+                    <View style={{ flex: 1, marginBottom: 50 }}>
                         <CommentsList post={post} user={user} submit={submit} setSubmit={setSubmit} setLoaded={setLoaded} />
                     </View>
                 </ScrollView>
