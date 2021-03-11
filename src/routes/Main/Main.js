@@ -98,7 +98,7 @@ const Main = (props) => {
                     postTypes={postTypes}
                 />
             )
-        if (selectedTabIndex === 2) return <Search />
+        if (selectedTabIndex === 2) return <Search user={user} />
         if (selectedTabIndex === 3) return <Notification />
         if (selectedTabIndex === 4) return <Profile user={user} 
                 setSelectedTabIndex={setSelectedTabIndex} getaActive={getaActive} 
@@ -106,7 +106,7 @@ const Main = (props) => {
                 postTypes={postTypes}
                 showPosts={showPosts} setShowPosts={setShowPosts}
             />
-        return <HashTags />
+        return <HashTags user={user}  />
     }
 
 

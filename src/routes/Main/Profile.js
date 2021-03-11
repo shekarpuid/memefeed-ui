@@ -16,6 +16,7 @@ const Profile = (props) => {
 	const { height, width } = Dimensions.get('window')
 	const [filterMenu, setFilterMenu] = useState(false)
 	const [menuId, setMenuId] = useState(0)
+	let isMount = true
 
 	useEffect(() => {
 		// console.log(JSON.stringify(user))
@@ -25,7 +26,13 @@ const Profile = (props) => {
 		} else {
 			setAlbums(true)
 		}
+
+		return () => {
+            isMount = false
+        }
 	}, [])
+
+	
 
 	const renderHeader = () => {
 		return (
@@ -43,19 +50,21 @@ const Profile = (props) => {
 					/>
 				</View>
 				<View style={{ flex: 1 }}>
-					<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-						<View>
+					<View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+						<View style={{ flex: 0.7 }}>
 							<Text style={{ fontWeight: 'bold' }}>{user.data.name}</Text>
 							<Text style={{ fontWeight: 'bold', color: '#808080', fontSize: 15 }}>{user.data.handle_name}</Text>
 						</View>
-						<View>
-							<Ionicon name='notifications' style={{ fontSize: 30 }} />
-						</View>
-						<View>
+						<View style={{ flex: 0.3, flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
+							<View>
+								<Ionicon name='notifications' style={{ fontSize: 30 }} />
+							</View>
+							{/* <View>
 							<Ionicon name='chatbubble-ellipses-outline' style={{ fontSize: 30 }} />
-						</View>
-						<View>
-							<Icon name='thumbs-up-sharp' />
+						</View> */}
+							<TouchableOpacity>
+								<Icon name='thumbs-up-sharp' />
+							</TouchableOpacity>
 						</View>
 					</View>
 					<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
@@ -91,54 +100,54 @@ const Profile = (props) => {
 
 	return (
 		<Container>
-				<View style={{ flex: 1 }} onStartShouldSetResponder={() => {
+			<View style={{ flex: 1 }} onStartShouldSetResponder={() => {
 				if (menuId > 0) setMenuId(0)
 			}}>
-					{showPosts ? null :
-						<>
-							{renderHeader()}
-							{/* tabs titles */}
-							<View style={styles.tabsHeaders}>
-								{user.data.user_type === 'Creator' &&
-									<TouchableOpacity style={styles.pTabLink} onPress={() => {
-										setPosts(true)
-										setAlbums(false)
-									}}>
-										<Text style={[styles.pTabLinkText, { color: posts ? '#00639c' : '#333', fontWeight: posts ? 'bold' : 'normal' }]}>Posts</Text>
-									</TouchableOpacity>
-								}
+				{showPosts ? null :
+					<>
+						{renderHeader()}
+						{/* tabs titles */}
+						<View style={styles.tabsHeaders}>
+							{user.data.user_type === 'Creator' &&
 								<TouchableOpacity style={styles.pTabLink} onPress={() => {
-									setPosts(false)
-									setAlbums(true)
+									setPosts(true)
+									setAlbums(false)
 								}}>
-									<Text style={[styles.pTabLinkText, { color: albums ? '#00639c' : '#333', fontWeight: albums ? 'bold' : 'normal' }]}>Albums</Text>
+									<Text style={[styles.pTabLinkText, { color: posts ? '#00639c' : '#333', fontWeight: posts ? 'bold' : 'normal' }]}>Posts</Text>
 								</TouchableOpacity>
-							</View>
-						</>
-					}
+							}
+							<TouchableOpacity style={styles.pTabLink} onPress={() => {
+								setPosts(false)
+								setAlbums(true)
+							}}>
+								<Text style={[styles.pTabLinkText, { color: albums ? '#00639c' : '#333', fontWeight: albums ? 'bold' : 'normal' }]}>Albums</Text>
+							</TouchableOpacity>
+						</View>
+					</>
+				}
 
-					{/* Child Comps */}
-					<View>
-						{posts ?
-							<ProfilePosts
-								user={user} height={height} width={width}
-								// filterMenu={filterMenu} setFilterMenu={setFilterMenu}
-								postTypes={postTypes} onHomePostSend={onHomePostSend}
-								showPosts={showPosts} setShowPosts={setShowPosts}
-								menuId={menuId} setMenuId={setMenuId}
-							/> :
-							<ProfileAlbums
-								user={user} height={height} width={width}
-								filterMenu={filterMenu} setFilterMenu={setFilterMenu}
-								postTypes={postTypes} onHomePostSend={onHomePostSend}
-								showPosts={showPosts} setShowPosts={setShowPosts}
-								setPosts={setPosts} menuId={menuId} setMenuId={setMenuId}
-							/>
-						}
-					</View>
+				{/* Child Comps */}
+				<View>
+					{posts ?
+						<ProfilePosts
+							user={user} height={height} width={width}
+							// filterMenu={filterMenu} setFilterMenu={setFilterMenu}
+							postTypes={postTypes} onHomePostSend={onHomePostSend}
+							showPosts={showPosts} setShowPosts={setShowPosts}
+							menuId={menuId} setMenuId={setMenuId}
+						/> :
+						<ProfileAlbums
+							user={user} height={height} width={width}
+							filterMenu={filterMenu} setFilterMenu={setFilterMenu}
+							postTypes={postTypes} onHomePostSend={onHomePostSend}
+							showPosts={showPosts} setShowPosts={setShowPosts}
+							setPosts={setPosts} menuId={menuId} setMenuId={setMenuId}
+						/>
+					}
 				</View>
+			</View>
 		</Container>
 	)
 }
 
-export default Profile 
+export default Profile

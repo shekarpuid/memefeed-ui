@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { View, FlatList, Dimensions, Platform , NativeModules, TouchableOpacity} from 'react-native'
-import { Container, Text, Button, Header, Spinner, Item, Input, Content } from 'native-base'
+import { Container, Text, Button, Header, Spinner, Item, Input, Modal } from 'native-base'
 import styles from '../../styles/common'
 import Ionicon from 'react-native-vector-icons/dist/Ionicons'
 import UseFetch from '../../hooks/UseFetch'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { httpService } from '../../utils'
+import Hashtag from './Hashtag/Hashtag'
 
-const HashTags = () => {
+const HashTags = (props) => {
+    const { user } = props
     const StatusBarStyle = Platform.OS === 'ios' ? 'light-content' : 'light-content'
     let isMount = true
     const url = 'hashtag/hashtags'
-    
-    // const { loading, data, error } = UseFetch(url, method)
-
     const [loading, setLoading] = useState(false)
     const [hashTags, setHashTags] = useState([])
+    const [hashTag, setHashTag] = useState({})
     const [error, setError] = useState(false)
     const [value, setValue] = useState('')
+    const [isVisible, setIsVisible] = useState(false)
 
     useEffect(() => {
-        // console.log("Hashtags: use effect")
-        // const res = AsyncStorage.getItem('posts')
         getHashTags()
 
         return () => {
@@ -53,23 +52,29 @@ const HashTags = () => {
             })
     }
 
-    const Tag = ({ name, index }) => (
+    const Tag = ({ item, name, index }) => (
         <View style={styles.hashTagItem}>
             <Text style={[styles.hashTagText, styles.hashTagIndex]}>{index + 1}.</Text>
             <View>
-                <Text style={[styles.hashTagText, styles.hashTagName]}>#{name}</Text>
+                <TouchableOpacity onPress={() => {
+                    setIsVisible(true)
+                    setHashTag(item)
+                }}>
+                    <Text style={[styles.hashTagText, styles.hashTagName]}>#{name}</Text>
+                </TouchableOpacity>
                 <Text style={[styles.hashTagSub]}>3k memes</Text>
             </View>
         </View>
     )
 
     const renderItem = ({ item, index }) => (
-        <Tag name={item.name} index={index} />
+        <Tag item={item} name={item.name} index={index} />
     )
 
     // Search Hashtags
     const searchHandler = async () => {
         setLoading(true)
+        setValue('')
         const method = 'POST'
         const formData = new FormData()
         formData.append('search_val', value)
@@ -84,13 +89,11 @@ const HashTags = () => {
                 }
                 // console.log("Search Hashtags: ", JSON.stringify(json))
                 setLoading(false)
-                setValue('')
             })
             .catch(error => {
                 alert(error)
                 console.log(error)
                 setError(true)
-                setValue('')
                 setLoading(false)
             })
     }
@@ -105,9 +108,6 @@ const HashTags = () => {
                         onChangeText={text => setValue(text)}
                         returnKeyType='search'
                         keyboardType='default'
-                        // onKeyPress={(e) => searchHandler(e)}
-                        // onSubmitEditing={(e) => searchHandler(e)}
-                        // multiline={true}
                     />
                     <TouchableOpacity onPress={() => searchHandler()}>
                         <Ionicon name="ios-search" size={Platform.OS === 'ios' ? 18 : 23} style={{top: Platform.OS === 'ios' ? 1 : 0, right: 10}} />
@@ -129,6 +129,9 @@ const HashTags = () => {
                             />
                         : null}
             </View>
+
+            {/* Hashtag Modal */}
+            <Hashtag isVisible={isVisible} setIsVisible={setIsVisible} hashTag={hashTag} setHashTag={setHashTag} user={user} />
         </View>
     )
 }
