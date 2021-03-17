@@ -1,12 +1,14 @@
-import { Platform, StyleSheet } from 'react-native'
+import { Platform, StyleSheet, Dimensions } from 'react-native'
 // colors
 const themeColor = '#00639c'; const blackColor = '#000000'; const greyColor = '#cccccc'; const darkGreyColor = '#aaa'; const errColor = '#dc3545'; const whiteColor = '#fff'
 // sizes
 const fs12 = 12; const fs14 = 14; const fs23 = 23; const fs25 = 25;
 const five = 5; const fifteen = 15; const ten = 10; const twenty = 20; const thirty = 30; const forty = 40; const fifty = 50;
+const {width, height} = Dimensions.get('window')
 
 export default StyleSheet.create({
     content: { paddingHorizontal: 20 },
+    row: {flexDirection:  'row', flexWrap: 'wrap'},
     // Helper styles
     blueBg: { backgroundColor: themeColor },
     content: { paddingHorizontal: thirty },
@@ -87,8 +89,20 @@ export default StyleSheet.create({
     // Profile styles
     tabsHeaders: { borderBottomWidth: 2, borderBottomColor: '#808080', marginBottom: 0, flexDirection: 'row', justifyContent: 'center' },
     pTabLink: {padding: 10, marginHorizontal: 15},
-    pTabLinkText: { alignSelf: 'center', fontSize: 16 }
+    pTabLinkText: { alignSelf: 'center', fontSize: 16 },
+    profileReportPopup: {
+        position: 'absolute', top: 35, right: 10, backgroundColor: '#fff', width: 100,
+        shadowColor: 'rgba(0,0,0,.25)', shadowOffset: {width: 2, height: 2}, elevation: 5,
+        borderColor: '#ddd', borderWidth: 1
+    },
+    profileReportPopupLink: {paddingHorizontal: 20, paddingVertical: 10},
 
+    // 
+    filterSelect:{
+        backgroundColor: '#ddd', width: width / 3 - 25, alignSelf: 'flex-start', marginVertical: 5,
+        marginLeft: 20, borderRadius: 5, borderStyle: 'solid', borderWidth: 1, borderColor: '#ddd'
+    },
+    filterPicker: { height: 30, transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] },
 
 })
 

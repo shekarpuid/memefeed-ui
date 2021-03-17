@@ -20,7 +20,7 @@ import PostReportModal from './PostReportModal'
 import PostSaveModal from './PostSaveModal'
 import {timesAgo} from '../utils'
 
-const AlbumPost = ({ post, user, start, end, filterdAlbums, setFilterdAlbums, setShowPosts, dispatch, setEditing, menuId, setMenuId }) => {
+const AlbumPost = ({ post, user, start, end, filterdAlbums, setFilterdAlbums, setShowPosts, dispatch, setEditing, menuId, setMenuId, getHashData }) => {
     const [isVisible, setIsVisible] = useState(false)
     const [selectedVote, setSelectedVote] = useState('')
     const [shared, setShared] = useState('')
@@ -91,7 +91,9 @@ const AlbumPost = ({ post, user, start, end, filterdAlbums, setFilterdAlbums, se
             // console.log(string.split(/((?:^|\s)(?:#[a-z\d-]+)|(?:^|\s)(?:@[a-z\d-]+))/gi))
             return string.split(/((?:^|\s)(?:#[a-z\d-]+)|(?:^|\s)(?:@[a-z\d-]+))/gi).filter(Boolean).map((v, i) => {
                 if (v.includes('#')) {
-                    return <TouchableOpacity onPress={() => console.log('Hashtag pressed!')}>
+                    return <TouchableOpacity onPress={ async () => {
+                        await getHashData(v)
+                    }}>
                         <Text key={i} style={{ color: '#00639c', fontWeight: 'bold' }}>{v}</Text>
                     </TouchableOpacity>
                 } else if (v.includes('@')) {

@@ -13,17 +13,13 @@ import { PostDisLike } from './PostDisLike'
 import { PostShare } from './PostShare'
 import ParentComment from './ParentComment'
 
-import { Menu, MenuOptions, MenuOption, MenuTrigger, renderers } from 'react-native-popup-menu';
 import styles from '../styles/common'
 import { sendPostData } from '../actions/editPostActions'
 import PostReportModal from './PostReportModal'
 import PostSaveModal from './PostSaveModal'
 import {timesAgo} from '../utils'
 
-const Post = (props) => {
-    const { 
-        post, user, start, end, data, setData, setShowPosts, dispatch, setEditing, menuId, setMenuId, getHashData
-    } = props
+const HashtagPost = ({ post, user, start, end, data, setData, setShowPosts, dispatch, setEditing, menuId, setMenuId, getHashData }) => {
     const [isVisible, setIsVisible] = useState(false)
     const [selectedVote, setSelectedVote] = useState('')
     const [shared, setShared] = useState('')
@@ -46,7 +42,7 @@ const Post = (props) => {
     }, [])
 
     const postHandler = async (value) => {
-        // console.log(value)
+        console.log(value)
         try {
             const username = 'memefeed'
             const password = 'Connect12345!'
@@ -190,9 +186,9 @@ const Post = (props) => {
                 <View style={{ flex: 0.6, alignItems: 'flex-end', justifyContent: 'center', paddingRight: 10 }}>
                     {/* <Ionicon name="home" /> */}
                     <View style={{ alignSelf: 'flex-end', paddingRight: 10 }}>
-                        <TouchableOpacity onPress={() => setMenuId(post.id)} style={{ padding: 5, marginRight: -5 }}>
+                        {/* <TouchableOpacity onPress={() => setMenuId(post.id)} style={{ padding: 5, marginRight: -5 }}>
                             <Ionicon name="ellipsis-horizontal-sharp" size={18} style={{ alignSelf: 'flex-end' }} />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                         <Text style={{ fontSize: 12, color: '#808080' }}>
                             {timesAgo(post.cdate)}
                         </Text>
@@ -278,4 +274,4 @@ const mapStateToProps = (state) => ({
     user: state.user
 })
 
-export default connect(mapStateToProps)(Post)
+export default connect(mapStateToProps)(HashtagPost)

@@ -7,6 +7,7 @@ import AlbumPost from '../../../components/AlbumPost'
 import Ionicon from 'react-native-vector-icons/dist/Ionicons'
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import CreatePost from '../../../components/CreatePost/CreatePost'
+import Hashtag from '../Hashtag/Hashtag'
 
 export const ProfileAlbums = (props) => {
     const { user, height, width, filterMenu, setFilterMenu, postTypes, onHomePostSend,
@@ -23,6 +24,8 @@ export const ProfileAlbums = (props) => {
     const [items, setItems] = useState(10)
     const [loadmore, setLoadmore] = useState(false)
     const [noData, setNoData] = useState('')
+    const [hashTag, setHashTag] = useState({})
+    const [hashtagModal, setHashtagModal] = useState(false)
 
     // const [menuId, setMenuId] = useState(0)
     const [editing, setEditing] = useState(false)
@@ -46,6 +49,29 @@ export const ProfileAlbums = (props) => {
             isMount = false
         }
     }, [])
+
+    // ======================================================== Fetch hashtag data fn
+    const getHashData = async (value) => {
+        let key = value.substring(1)
+        const url = 'hashtag/hashtags'
+        const formData = new FormData()
+        formData.append('user_id', user.data.session_id)
+        formData.append('search_val', key)
+        // console.log("Hashtag follow: ", JSON.stringify(formData))
+
+        await httpService(url, 'POST', formData)
+            .then(res => res.json())
+            .then(json => {
+                if (json.status === 0) {
+                    alert(json.msg)
+                } else {
+                    if (isMount) setHashTag(json.data[0])
+                    setHashtagModal(true)
+                }
+                // console.log("Hashtag data: ", JSON.stringify(json))
+            })
+            .catch(error => { alert(error); console.log(error) })
+    }
 
     const getAlbumNames = async () => {
         await httpService('album/album_name_list', 'POST', formData,  {signal: signal})
@@ -164,6 +190,7 @@ export const ProfileAlbums = (props) => {
                                     return <AlbumPost post={item} user={user} menuId={menuId} setMenuId={setMenuId}
                                         start={0} end={9} filterdAlbums={filterdAlbums} setFilterdAlbums={setFilterdAlbums}
                                         editing={editing} setEditing={setEditing} setShowPosts={setShowPosts}
+                                        getHashData={getHashData}
                                     />
                                 }
                             }}
@@ -228,6 +255,13 @@ export const ProfileAlbums = (props) => {
                         </View>
                     }
                 </>
+            }
+            
+            {hashtagModal &&
+                <Hashtag user={user}
+                    isVisible={hashtagModal} setIsVisible={setHashtagModal}
+                    hashTag={hashTag} setHashTag={setHashTag}
+                />
             }
         </View>
     )

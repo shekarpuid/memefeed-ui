@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Linking, FlatList, View, Image, ScrollView, RefreshControl, TouchableWithoutFeedback, Pressable } from 'react-native'
-import { Text, Spinner, Button } from 'native-base'
+import { View, ScrollView, RefreshControl, Pressable } from 'react-native'
+import { Text, Spinner } from 'native-base'
 import { connect } from 'react-redux'
 import Post from '../../components/Post'
 import CreatePost from '../../components/CreatePost/CreatePost'
@@ -8,7 +8,8 @@ import styles from '../../styles/common'
 import { env } from "../../env"
 import { encode } from 'base-64'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { MenuProvider } from 'react-native-popup-menu'
+import Hashtag from './Hashtag/Hashtag'
+import { httpService } from '../../utils'
 
 const wait = (timeout) => {
     return new Promise(resolve => {
@@ -31,6 +32,9 @@ const Home = (props) => {
     const [menuId, setMenuId] = useState(0)
     const [newPost, setNewPost] = useState(0)
     const postsScrollViewRef = useRef()
+    const [hashTag, setHashTag] = useState({})
+    const [hashtagModal, setHashtagModal] = useState(false)
+    let isMount = true
 
     useEffect(() => {
         fetchData()
@@ -38,6 +42,9 @@ const Home = (props) => {
         // console.log("Log fetchData")
         // const jsonValue = JSON.parse(res)
         // alert(JSON.stringify(res))
+        return () => {
+            isMount = false
+        }
     }, [])
 
     // ======================================================== Render posts fn
@@ -45,7 +52,33 @@ const Home = (props) => {
         if (error) return <Text style={{ marginVertical: 25, alignSelf: 'center', color: 'red' }}>Unable to display memes.</Text>
         if (data !== null && data.status === 0) return <Text style={styles.noData}>No memes found to display.</Text>
         return data.map((post, index) => <Post key={index} post={post} user={user} start={start} end={end} data={data}
-            setData={setData} setShowPosts={setShowPosts} setEditing={setEditing} menuId={menuId} setMenuId={setMenuId} />)
+            setData={setData} setShowPosts={setShowPosts} setEditing={setEditing} menuId={menuId} setMenuId={setMenuId}
+            getHashData={getHashData}
+            />
+        )
+    }
+
+    // ======================================================== Fetch hashtag data fn
+    const getHashData = async (value) => {
+        let key = value.substring(1)
+        const url = 'hashtag/hashtags'
+        const formData = new FormData()
+        formData.append('user_id', user.data.session_id)
+        formData.append('search_val', key)
+        // console.log("Hashtag follow: ", JSON.stringify(formData))
+
+        await httpService(url, 'POST', formData)
+            .then(res => res.json())
+            .then(json => {
+                if (json.status === 0) {
+                    alert(json.msg)
+                } else {
+                    if (isMount) setHashTag(json.data[0])
+                    setHashtagModal(true)
+                }
+                // console.log("Hashtag data: ", JSON.stringify(json))
+            })
+            .catch(error => { alert(error); console.log(error) })
     }
 
     // ======================================================== Fetch posts fn
@@ -72,7 +105,7 @@ const Home = (props) => {
         })
             .then(res => res.json())
             .then(resJson => {
-                console.log("Posts: ", JSON.stringify(resJson))
+                // console.log("Posts: ", JSON.stringify(resJson))
                 if (resJson.status === 0) {
                     setData(data)
                     setIsLoading(false)
@@ -191,17 +224,6 @@ const Home = (props) => {
                     postTypes={postTypes} user={user} fetchData={fetchData} editing={editing} setEditing={setEditing}
                     setNewPost={setNewPost} newPostFetch={newPostFetch}
                 /> :
-                // <FlatList
-                //     data={data}
-                //     keyExtractor={item => item.id.toString()}
-                //     renderItem={({ item }) => {
-                //         return <Post key={item.id} post={item} user={user} start={start} end={end} data={data}
-                //         setData={setData} setShowPosts={setShowPosts} setEditing={setEditing} menuId={menuId} setMenuId={setMenuId} />
-                //     }}
-                //     bounces={false}
-                //     onEndReached={() => handleLoadMore()}
-                //     onEndReachedThreshold={0.2}
-                // />
                 <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => onRefresh()} />}
                     onScroll={({ nativeEvent }) => {
                         if (isCloseToBottom(nativeEvent)) {
@@ -225,24 +247,14 @@ const Home = (props) => {
                         {isLoading ? <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} /> : null}
                         {noData && data.length > 0 ? <Text style={{ marginVertical: 25, alignSelf: 'center', color: 'red' }}>No more memes found.</Text> : null}
                     </>
+                    {hashtagModal &&
+                        <Hashtag user={user}
+                            isVisible={hashtagModal} setIsVisible={setHashtagModal}
+                            hashTag={hashTag} setHashTag={setHashTag}  
+                        />
+                    }
                 </ScrollView>
             }
-
-
-            {/* <FlatList
-                // ref={scrollViewRef}
-                data={data}
-                renderItem={renderItem}
-                keyExtractor={item => item.id.toString()}
-                scrollEnabled={true}
-                ListFooterComponent={() => renderFooter()}
-                onEndReached={() => handleLoadMore()}
-                onEndReachedThreshold={0}
-                // onMomentumScrollEnd={() => {
-                //     // scrollViewRef.current.scrollToEnd({ animated: true })
-                //     handleLoadMore()
-                // }}
-            /> */}
         </>
     )
 }

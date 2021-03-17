@@ -9,7 +9,8 @@ import { ProfilePosts } from './Profile/ProfilePosts'
 import { ProfileAlbums } from './Profile/ProfileAlbums'
 
 const Profile = (props) => {
-	const { setSelectedTabIndex, getaActive, user, postTypes, onHomePostSend, showPosts, setShowPosts } = props
+	// setSelectedTabIndex, getaActive, 
+	const { user, postTypes, onHomePostSend, showPosts, setShowPosts } = props
 	const imageUrl = `${env.baseUrl}${user.data.profile_image}`
 	const [posts, setPosts] = useState(false)
 	const [albums, setAlbums] = useState(false)
