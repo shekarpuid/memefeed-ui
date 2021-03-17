@@ -98,13 +98,18 @@ const Main = (props) => {
                     postTypes={postTypes}
                 />
             )
-        if (selectedTabIndex === 2) return <Search user={user} />
+        if (selectedTabIndex === 2) return (
+            <Search 
+                user={user} 
+                onHomePostSend={(data) => handlePostCreate(data)}
+                postTypes={postTypes} showPosts={showPosts} setShowPosts={setShowPosts}
+            />
+        )
         if (selectedTabIndex === 3) return <Notification />
         if (selectedTabIndex === 4) return <Profile user={user} 
                 setSelectedTabIndex={setSelectedTabIndex} getaActive={getaActive} 
                 onHomePostSend={(data) => handlePostCreate(data)}
-                postTypes={postTypes}
-                showPosts={showPosts} setShowPosts={setShowPosts}
+                postTypes={postTypes} showPosts={showPosts} setShowPosts={setShowPosts}
             />
         return <HashTags user={user}  />
     }

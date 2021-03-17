@@ -44,21 +44,21 @@ const Headers = (props) => {
         }
 
         // Search Header
-        if (selectedTabIndex === 2) {
-            return (
-                <Header searchBar style={{ backgroundColor: '#00639c' }} androidStatusBarColor="#00639c" iosBarStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}>
-                    <Item>
-                        <Ionicon name="ios-search" size={23} />
-                        <Input placeholder="Search with #Hash Tag" />
-                    </Item>
-                    <Button transparent>
-                        <Text>Search</Text>
-                    </Button>
-                </Header>
-            )
-        }
+        // if (selectedTabIndex === 2) {
+        //     return (
+        //         <Header searchBar style={{ backgroundColor: '#00639c' }} androidStatusBarColor="#00639c" iosBarStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}>
+        //             <Item>
+        //                 <Ionicon name="ios-search" size={23} />
+        //                 <Input placeholder="Search with #Hash Tag" />
+        //             </Item>
+        //             <Button transparent>
+        //                 <Text>Search</Text>
+        //             </Button>
+        //         </Header>
+        //     )
+        // }
 
-        if (selectedTabIndex === 3 || selectedTabIndex === 4) {
+        if (selectedTabIndex === 2 || selectedTabIndex === 3 || selectedTabIndex === 4) {
             return (
                 <Header searchBar style={{ backgroundColor: '#00639c', height: 0 }} androidStatusBarColor="#00639c" iosBarStyle='light-content' />
             )

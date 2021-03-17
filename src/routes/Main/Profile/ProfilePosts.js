@@ -4,6 +4,7 @@ import styles from '../../../styles/common'
 import { httpService } from '../../../utils'
 import Post from '../../../components/Post'
 import CreatePost from '../../../components/CreatePost/CreatePost'
+import Hashtag from '../Hashtag/Hashtag'
 
 export const ProfilePosts = props => {
     const { user, height, width, postTypes, onHomePostSend,
@@ -16,10 +17,35 @@ export const ProfilePosts = props => {
     const [newPost, setNewPost] = useState(0)
     const [items, setItems] = useState(10)
     const [loadmore, setLoadmore] = useState(false)
+    const [hashTag, setHashTag] = useState({})
+    const [hashtagModal, setHashtagModal] = useState(false)
 
     useEffect(() => {
         getCreatorPosts()
     }, [])
+
+    // ======================================================== Fetch hashtag data fn
+    const getHashData = async (value) => {
+        let key = value.substring(1)
+        const url = 'hashtag/hashtags'
+        const formData = new FormData()
+        formData.append('user_id', user.data.session_id)
+        formData.append('search_val', key)
+        // console.log("Hashtag follow: ", JSON.stringify(formData))
+
+        await httpService(url, 'POST', formData)
+            .then(res => res.json())
+            .then(json => {
+                if (json.status === 0) {
+                    alert(json.msg)
+                } else {
+                    if (isMount) setHashTag(json.data[0])
+                    setHashtagModal(true)
+                }
+                // console.log("Hashtag data: ", JSON.stringify(json))
+            })
+            .catch(error => { alert(error); console.log(error) })
+    }
 
     const getCreatorPosts = async () => {
         setLoading(true)
@@ -84,9 +110,9 @@ export const ProfilePosts = props => {
                         renderItem={({ item, index }) => {
                             if (index + 1 <= items) {
                                 return <Post post={item} user={user}
-                                    menuId={menuId} setMenuId={setMenuId}
                                     start={0} end={9} menuId={menuId} setMenuId={setMenuId}
                                     editing={editing} setEditing={setEditing} setShowPosts={setShowPosts}
+                                    getHashData={getHashData}
                                 />
                             }
                         }}
@@ -96,6 +122,12 @@ export const ProfilePosts = props => {
                         style={{ height: Platform.OS === 'ios' ? height - 257 : height - 235 }}
                     />
                 </View>
+            }
+            {hashtagModal &&
+                <Hashtag user={user}
+                    isVisible={hashtagModal} setIsVisible={setHashtagModal}
+                    hashTag={hashTag} setHashTag={setHashTag}
+                />
             }
         </View>
     )

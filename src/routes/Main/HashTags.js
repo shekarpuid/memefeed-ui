@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, FlatList, Dimensions, Platform , NativeModules, TouchableOpacity} from 'react-native'
+import { View, FlatList, Dimensions, Platform, NativeModules, TouchableOpacity } from 'react-native'
 import { Container, Text, Button, Header, Spinner, Item, Input, Modal } from 'native-base'
 import styles from '../../styles/common'
 import Ionicon from 'react-native-vector-icons/dist/Ionicons'
@@ -38,8 +38,8 @@ const HashTags = (props) => {
                 if (json.status === 0) {
                     alert(json.msg)
                 } else {
-                    if(isMount) setHashTags(json.data)
-                    
+                    if (isMount) setHashTags(json.data)
+
                 }
                 // console.log("Hashtags: ", JSON.stringify(json))
                 setLoading(false)
@@ -78,6 +78,7 @@ const HashTags = (props) => {
         const method = 'POST'
         const formData = new FormData()
         formData.append('search_val', value)
+        formData.append('user_id', user.data.session_id)
 
         await httpService(url, method, formData)
             .then(res => res.json())
@@ -85,53 +86,60 @@ const HashTags = (props) => {
                 if (json.status === 0) {
                     alert(json.msg)
                 } else {
-                    if(isMount) setHashTags(json.data)
+                    if (isMount) setHashTags(json.data)
                 }
                 // console.log("Search Hashtags: ", JSON.stringify(json))
                 setLoading(false)
+				setValue('')
             })
             .catch(error => {
                 alert(error)
                 console.log(error)
                 setError(true)
                 setLoading(false)
+				setValue('')
             })
     }
-    
 
     return (
         <View>
             <Header searchBar style={{ backgroundColor: '#00639c' }} androidStatusBarColor="#00639c"
                 iosBarStyle={StatusBarStyle}>
-                <Item style={{paddingHorizontal: Platform.OS === 'ios' ? 10 : 0}}>
-                    <Input placeholder="Search with #Hash Tag" 
+                <Item style={{ paddingHorizontal: Platform.OS === 'ios' ? 10 : 0 }}>
+                    <Input placeholder="Search with #Hash Tag"
                         onChangeText={text => setValue(text)}
                         returnKeyType='search'
                         keyboardType='default'
+						value={value}
                     />
                     <TouchableOpacity onPress={() => searchHandler()}>
-                        <Ionicon name="ios-search" size={Platform.OS === 'ios' ? 18 : 23} style={{top: Platform.OS === 'ios' ? 1 : 0, right: 10}} />
+                        <Ionicon name="ios-search" size={Platform.OS === 'ios' ? 18 : 23} style={{ top: Platform.OS === 'ios' ? 1 : 0, right: 10 }} />
                     </TouchableOpacity>
                 </Item>
-                <Button transparent>
-                    <Text style={{color: '#fff'}}>Search</Text>
-                </Button>
+                {/* <Button transparent>
+                    <Text style={{ color: '#fff' }}>Search</Text>
+                </Button> */}
             </Header>
 
             <View>
                 {loading ? <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} /> : null}
                 {hashTags !== null && hashTags.status === 0 ? <Text style={{ marginTop: 20, alignSelf: 'center' }}>{hashTags.msg}.</Text> :
                     hashTags !== null ?
-                            <FlatList style={{ marginBottom: Platform.OS === 'ios' ? 165 : 112, marginTop: 15 }}
-                                data={hashTags}
-                                renderItem={renderItem}
-                                keyExtractor={item => item.id}
-                            />
+                        <FlatList style={{ marginBottom: Platform.OS === 'ios' ? 165 : 112, marginTop: 15 }}
+                            data={hashTags}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.id}
+                        />
                         : null}
             </View>
 
             {/* Hashtag Modal */}
-            <Hashtag isVisible={isVisible} setIsVisible={setIsVisible} hashTag={hashTag} setHashTag={setHashTag} user={user} />
+            {isVisible ?
+                <Hashtag 
+                    isVisible={isVisible} setIsVisible={setIsVisible} 
+                    hashTag={hashTag} setHashTag={setHashTag} user={user} 
+                />
+                : null}
         </View>
     )
 }

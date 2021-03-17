@@ -1,73 +1,91 @@
 import React, { useState, useEffect } from 'react';
-import { List, Text, ListItem, Thumbnail, Left, Body, Right, Spinner } from 'native-base';
-import { Image, View, TouchableOpacity, ScrollView } from 'react-native'
+import { List, Text, ListItem, Thumbnail, Left, Body, Right, Spinner, Header, Item, Input } from 'native-base';
+import { Image, View, TouchableOpacity, ScrollView, Platform } from 'react-native'
+import Ionicon from 'react-native-vector-icons/dist/Ionicons'
 import { env } from "../../env"
 import { encode } from 'base-64'
 import styles from '../../styles/common'
 import defaultAvatar from '../../../assets/grayman.png'
 import { httpService } from '../../utils';
-import { Loader } from '../../components/Loader';
+import { Loader } from '../../components/Loader'
+import UserProfileModal from './UserProfileModal';
 
-
+// User component
 const User = (props) => {
-	const {user, imageUrl, followHandler, toIds} = props
+	const { user, imageUrl, followHandler, toIds, item, setViewUser, setIsVisible } = props
 	const isNumber = id => id == user.id
 	let indexId = toIds.findIndex(isNumber)
+	let http = item.profile_image.search('https')
 
-	return(
+	useEffect(() => {
+		console.log(JSON.stringify(item))
+		return () => {
+			isMount = false
+		}
+	}, [])
+
+	return (
 		<>
-			<ListItem avatar key={user.id} >
-					<Left>
-						{/* <Thumbnail source={user.profile_image === null || user.profile_image === '' ? { uri: defaultAvatar } : { uri: imageUrl }} /> */}
-						<Thumbnail
-						
-						source={user.profile_image === null || user.profile_image === '' ? defaultAvatar :
-							user.profile_image.length > 0 ? { uri: imageUrl } :
-							defaultAvatar}
+			<ListItem avatar key={item.id} >
+				<Left>
+					{/* <Thumbnail source={user.profile_image === null || user.profile_image === '' ? { uri: defaultAvatar } : { uri: imageUrl }} /> */}
+					<Thumbnail
+						source={item.profile_image === null || item.profile_image === '' ? defaultAvatar 
+						: http >= 0 ? { uri: item.profile_image }
+						: item.profile_image.length > 0 ? { uri: imageUrl } :
+								defaultAvatar}
 					/>
-					</Left>
-					<Body>
-						<Text>{user.name}</Text>
-						<Text note>{user.handle_name}</Text>
-					</Body>
-					<Right>
-						{indexId >= 0 ? 
-							<View style={
-								{
-									backgroundColor: '#00639c',
-									justifyContent: 'center',
-									alignItems: 'center',
-									width: 120,
-									height: 40,
-									marginRight: 4,
-									borderWidth: 1,
-									borderColor: '#00639c'
-								}
-							}>
-								<Text style={{ color: '#fff', fontWeight: 'bold' }}>Following</Text>
-							</View>
-						:
-							<TouchableOpacity style={{
-								backgroundColor: '#fff',
+				</Left>
+				<Body>
+					<TouchableOpacity
+						onPress={() => {
+							setIsVisible(true)
+							setViewUser(item)
+						}}
+					>
+						<Text>{item.name}</Text>
+					</TouchableOpacity>
+					<Text note>{item.handle_name}</Text>
+				</Body>
+				<Right>
+					{indexId >= 0 || item.to_id === user.data.session_id ?
+						<View style={
+							{
+								backgroundColor: '#00639c',
 								justifyContent: 'center',
 								alignItems: 'center',
 								width: 120,
 								height: 40,
 								marginRight: 4,
 								borderWidth: 1,
-								borderColor: 'gray'
-							}} onPress={() => followHandler(user)}>
-								<Text style={{ color: '#000000', fontWeight: 'bold' }}>Follow</Text>
-							</TouchableOpacity>
-						}
-					</Right>
-				</ListItem>
+								borderColor: '#00639c'
+							}
+						}>
+							<Text style={{ color: '#fff', fontWeight: 'bold' }}>Following</Text>
+						</View>
+						:
+						<TouchableOpacity style={{
+							backgroundColor: '#fff',
+							justifyContent: 'center',
+							alignItems: 'center',
+							width: 120,
+							height: 40,
+							marginRight: 4,
+							borderWidth: 1,
+							borderColor: 'gray'
+						}} onPress={() => followHandler(user)}>
+							<Text style={{ color: '#000000', fontWeight: 'bold' }}>Follow</Text>
+						</TouchableOpacity>
+					}
+				</Right>
+			</ListItem>
 		</>
 	)
 }
 
 export const Search = (props) => {
-	const { user } = props
+	const { user, postTypes, onHomePostSend, showPosts, setShowPosts } = props
+	const StatusBarStyle = Platform.OS === 'ios' ? 'light-content' : 'light-content'
 	const [userType, setUserType] = useState('Creator')
 	const [selectedIndex, setSelectedIndex] = useState(0)
 	const [loading, setLoading] = useState(false)
@@ -77,10 +95,17 @@ export const Search = (props) => {
 	const [response, setResponse] = useState({})
 	const [active, setActive] = useState(false)
 	const [toIds, setToIds] = useState([])
+	const [value, setValue] = useState('')
+	let isMount = true
+	const [isVisible, setIsVisible] = useState(false)
+	const [viewUser, setViewUser] = useState({})
 
 	useEffect(() => {
 		creatorsHandler()
-		console.log(JSON.stringify(toIds))
+		// console.log(JSON.stringify(users))
+		return () => {
+			isMount = false
+		}
 	}, [])
 
 	function getActive(active) {
@@ -145,6 +170,7 @@ export const Search = (props) => {
 
 			let formData = new FormData()
 			formData.append('user_type', 'Creator')
+			formData.append('user_id', user.data.session_id)
 			// console.log("Users form data: " + JSON.stringify(formData))
 
 			const url = `${env.baseUrl}users/get_users`
@@ -169,7 +195,7 @@ export const Search = (props) => {
 	const usersHandler = async () => {
 		await setUsers([])
 		await setSelectedIndex(1);
-		await setUserType('user')
+		await setUserType('User')
 		setLoading(true)
 		try {
 			const username = 'memefeed'
@@ -183,6 +209,7 @@ export const Search = (props) => {
 
 			let formData = new FormData()
 			formData.append('user_type', 'user')
+			formData.append('user_id', user.data.session_id)
 			// console.log("Users form data: " + JSON.stringify(formData))
 
 			const url = `${env.baseUrl}users/get_users`
@@ -207,7 +234,7 @@ export const Search = (props) => {
 	// Tabs links
 	function renderSegment() {
 		return (
-			<View style={{ width: '100%', height: 80, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+			<View style={{ width: '100%', height: 70, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
 				<TouchableOpacity onPress={() => creatorsHandler()} style={loadSegmentStyle(0)}>
 					<Text style={{ color: selectedIndex != 0 ? '#000000' : '#fff', fontWeight: 'bold' }}>Creators</Text>
 				</TouchableOpacity>
@@ -222,9 +249,11 @@ export const Search = (props) => {
 	const renderUsers = () => {
 		if (hasErrors) return <Text style={styles.error}>Unable to display comments.</Text>
 		if (users.length > 0) {
-			return users.map(user => {
-				const imageUrl = `${env.baseUrl}${user.profile_image}`
-				return <User user={user} imageUrl={imageUrl} followHandler={followHandler} toIds={toIds} />
+			return users.map(item => {
+				const imageUrl = `${env.baseUrl}${item.profile_image}`
+				return <User item={item} imageUrl={imageUrl} followHandler={followHandler} toIds={toIds} user={user}
+					setViewUser={setViewUser} setIsVisible={setIsVisible}
+				/>
 			})
 		}
 		return <Text style={styles.noData}>No users to display.</Text>
@@ -234,44 +263,104 @@ export const Search = (props) => {
 		setResponse({})
 		setLoader(true)
 		let userType = ''
-		if(followUser.user_type === 'Creator'){
+		if (followUser.user_type === 'Creator') {
 			userType = 'creator'
-		}else{
+		} else {
 			userType = 'user'
 		}
-        const url = 'followers/following'
-        const formData = new FormData()
-        formData.append('user_id', user.data.session_id)
-        formData.append('type', userType)
-        formData.append('to_id', followUser.id)
-        // console.log("Hashtag follow: ", JSON.stringify(formData))
+		const url = 'followers/following'
+		const formData = new FormData()
+		formData.append('user_id', user.data.session_id)
+		formData.append('type', userType)
+		formData.append('to_id', followUser.id)
+		// console.log("Hashtag follow: ", JSON.stringify(formData))
 
-        await httpService(url, 'POST', formData)
-            .then(res => res.json())
-            .then(json => {
+		await httpService(url, 'POST', formData)
+			.then(res => res.json())
+			.then(json => {
 				setResponse(json)
 				setToIds([...toIds, json.to_id])
-				
+
 				// console.log(JSON.stringify(toIds))
-                if (json.status === 0) {
-                    alert(json.msg)
-                } else {
-                    alert(json.msg)
-                }
-                // console.log("User follow: ", JSON.stringify(json))
+				if (json.status === 0) {
+					alert(json.msg)
+				} else {
+					alert(json.msg)
+				}
+				// console.log("User follow: ", JSON.stringify(json))
 				setLoader(false)
-            })
-            .catch(error => {
+			})
+			.catch(error => {
 				alert(error)
 				setLoader(false)
 			})
-    }
+	}
+
+	// Search Hashtags
+	const searchHandler = async () => {
+		setLoading(true)
+		setValue('')
+		const url = 'users/get_users'
+		const method = 'POST'
+		const formData = new FormData()
+		formData.append('search_val', value)
+		formData.append('user_id', user.data.session_id)
+		formData.append('user_type', userType)
+		// console.log("Search Users form data: ", JSON.stringify(formData))
+
+		await httpService(url, method, formData)
+			.then(res => res.json())
+			.then(json => {
+				if (json.status === 0) {
+					alert(json.msg)
+				} else {
+					if (isMount) setUsers(json.data)
+				}
+				// console.log("Search Hashtags: ", JSON.stringify(json))
+				setLoading(false)
+				setValue('')
+			})
+			.catch(error => {
+				alert(error)
+				console.log(error)
+				setError(true)
+				setLoading(false)
+				setValue('')
+			})
+	}
 
 	return (
-		<ScrollView>
+		<>
+			<Header searchBar style={{ backgroundColor: '#00639c' }} androidStatusBarColor="#00639c"
+				iosBarStyle={StatusBarStyle}>
+				<Item style={{ paddingHorizontal: Platform.OS === 'ios' ? 10 : 0 }}>
+					<Input placeholder="User's Search"
+						onChangeText={text => setValue(text)}
+						returnKeyType='search'
+						keyboardType='default'
+						value={value}
+					/>
+					<TouchableOpacity onPress={() => searchHandler()}>
+						<Ionicon name="ios-search" size={Platform.OS === 'ios' ? 18 : 23} style={{ top: Platform.OS === 'ios' ? 1 : 0, right: 10 }} />
+					</TouchableOpacity>
+				</Item>
+				{/* <Button transparent>
+                    <Text style={{ color: '#fff' }}>Search</Text>
+                </Button> */}
+			</Header>
 			{renderSegment()}
-			{loading ? <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} /> : <List>{renderUsers()}</List>}
-			{loader ? <Loader /> : null}
-		</ScrollView>
+			<ScrollView>
+				{loading ? <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} /> : <List>{renderUsers()}</List>}
+				{loader ? <Loader /> : null}
+			</ScrollView>
+
+			{isVisible &&
+				<UserProfileModal
+					viewUser={viewUser} loggedInUser={user} 
+					isVisible={isVisible} setIsVisible={setIsVisible} 
+					onHomePostSend={onHomePostSend} postTypes={postTypes} showPosts={showPosts} setShowPosts={setShowPosts}
+				/>
+			}
+		</>
 	)
 }
