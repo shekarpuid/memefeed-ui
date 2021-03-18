@@ -5,6 +5,7 @@ import Ionicon from 'react-native-vector-icons/dist/Ionicons'
 import { httpService } from '../../../utils'
 import styles from '../../../styles/common'
 import HashtagPost from '../../../components/HashtagPost'
+import { Loader } from '../../../components/Loader'
 
 const Hashtag = (props) => {
     const StatusBarStyle = Platform.OS === 'ios' ? 'light-content' : 'light-content'
@@ -24,6 +25,9 @@ const Hashtag = (props) => {
     const [ptypeList, setPtypeList] = useState([])
     const [sortByList, setSortByList] = useState([])
     const [filterLoading, setFilterLoading] = useState(false)
+    const [subHashTag, setSubHashTag] = useState({})
+    const [hashtagModal, setHashtagModal] = useState(false)
+    const [loader, setLoader] = useState(false)
 
     useEffect(() => {
         getFilters()
@@ -140,6 +144,7 @@ const Hashtag = (props) => {
                 })
         }
     }
+
     const sortByOnchange = async (value) => {
         if (value !== 0) {
             setFilterLoading(true)
@@ -169,6 +174,31 @@ const Hashtag = (props) => {
 
     const datePostedOnchange = value => {
         setDatePosted(value)
+    }
+
+    // ======================================================== Fetch hashtag data fn
+    const getHashData = async (value) => {
+        setLoader(true)
+        let key = value.substring(1)
+        const url = 'hashtag/hashtags'
+        const formData = new FormData()
+        formData.append('user_id', user.data.session_id)
+        formData.append('search_val', key)
+        // console.log("Hashtag follow: ", JSON.stringify(formData))
+
+        await httpService(url, 'POST', formData)
+            .then(res => res.json())
+            .then(json => {
+                if (json.status === 0) {
+                    alert(json.msg)
+                } else {
+                    if (isMount) setHashTag(json.data[0])
+                    setHashtagModal(true)
+                }
+                // console.log("Hashtag data: ", JSON.stringify(json))
+            })
+            .catch(error => { alert(error); console.log(error) })
+            .finally(() => setLoader(false))
     }
 
     return (
@@ -253,13 +283,14 @@ const Hashtag = (props) => {
                         renderItem={({ item }) => {
                             return <HashtagPost
                                 post={item} start={start} end={end} data={data} setData={setData} setShowPosts={setShowPosts}
-                                setEditing={setEditing} menuId={menuId} setMenuId={setMenuId}
+                                setEditing={setEditing} menuId={menuId} setMenuId={setMenuId} getHashData={getHashData}
                             />
                         }}
                         keyExtractor={item => item.id}
                     />
                     : <Text style={styles.noData}>No data found</Text>
                 }
+                {loader && <Loader />}
             </Modal>
         </>
     )
