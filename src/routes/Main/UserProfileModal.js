@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Container, Text, Thumbnail, Icon, Header, Right, Left, Body, Button, Title } from 'native-base'
-import { Dimensions, TouchableOpacity, View, Modal, ActivityIndicator, FlatList } from 'react-native'
+import { Dimensions, TouchableOpacity, View, Modal, ActivityIndicator, FlatList, Platform } from 'react-native'
 import defaultAvatar from '../../../assets/grayman.png'
 import Ionicon from 'react-native-vector-icons/dist/Ionicons'
 import styles from '../../styles/common'
@@ -9,6 +9,7 @@ import UserReportModal from './UserReportModal'
 import { httpService } from '../../utils'
 import HashtagPost from '../../components/HashtagPost'
 import Hashtag from './Hashtag/Hashtag'
+import { Loader } from '../../components/Loader'
 
 const UserProfileModal = (props) => {
     const { viewUser, loggedInUser, postTypes, onHomePostSend, showPosts, setShowPosts, isVisible, setIsVisible } = props
@@ -24,9 +25,12 @@ const UserProfileModal = (props) => {
     const [loading, setLoading] = useState(false)
     const [hashTag, setHashTag] = useState({})
     const [hashtagModal, setHashtagModal] = useState(false)
+    const [loader, setLoader] = useState(false)
+
+    const http = viewUser.profile_image.search("http")
 
     useEffect(() => {
-        // console.log(JSON.stringify(viewUser))
+        console.log(JSON.stringify(viewUser))
         // console.log(JSON.stringify(loggedInUser))
         fetchUserPosts()
 
@@ -53,7 +57,7 @@ const UserProfileModal = (props) => {
                     if (isMount) setHashTag(json.data[0])
                     setHashtagModal(true)
                 }
-                // console.log("Hashtag data: ", JSON.stringify(json))
+                console.log("Hashtag data: ", JSON.stringify(json))
             })
             .catch(error => { alert(error); console.log(error) })
     }
@@ -76,6 +80,26 @@ const UserProfileModal = (props) => {
                 // console.log("Creator Posts: ", JSON.stringify(json))
             })
             .catch(error => { alert(error); console.log(error); setLoading(false) })
+    }
+
+    const userBlockHandler = async () => {
+        setLoader(true)
+        const formData = new FormData()
+        formData.append('user_id', loggedInUser.data.session_id)
+        formData.append('blocked_user_id', viewUser.id)
+
+        await httpService('users/block_user', 'POST', formData)
+            .then(res => res.json())
+            .then(json => {
+                if (json.status === 0) {
+                    alert(json.msg)
+                } else {
+                    alert(json.msg)
+                }
+                // console.log("User block response: ", JSON.stringify(json))
+                setLoader(false)
+            })
+            .catch(error => { alert(error); console.log(error); setLoader(false) })
     }
 
     const footerComp = () => {
@@ -104,10 +128,10 @@ const UserProfileModal = (props) => {
                     <Thumbnail
                         style={{ borderWidth: 5, borderColor: '#00639c' }}
                         large
-                        // source={{uri: 'https://cdn.fastly.picmonkey.com/contentful/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=800&q=70'}}
                         source={
-                            viewUser.profile_image.length > 0 ? { uri: imageUrl } :
-                                defaultAvatar}
+                            http >= 0 ? { uri: viewUser.profile_image } :
+                                viewUser.profile_image.length > 0 ? { uri: imageUrl } :
+                                    defaultAvatar}
                     />
                 </View>
                 <View style={{ flex: 1 }}>
@@ -126,25 +150,7 @@ const UserProfileModal = (props) => {
                                 <TouchableOpacity onPress={() => setPopup(true)}>
                                     <Ionicon name='ios-ellipsis-horizontal-circle' style={{ fontSize: 30 }} />
                                 </TouchableOpacity>
-                                {popup &&
-                                    <View style={styles.profileReportPopup}>
-                                        <TouchableOpacity style={styles.profileReportPopupLink}
-                                            onPress={() => {
-                                                setPopup(false)
-                                                setShowReport(true)
-                                            }}
-                                        >
-                                            <Text>Report</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={styles.profileReportPopupLink}
-                                            onPress={() => {
-                                                setPopup(false)
-                                            }}
-                                        >
-                                            <Text>Block</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                }
+
                             </View>
                         </View>
                     </View>
@@ -170,6 +176,28 @@ const UserProfileModal = (props) => {
                             <Text style={{ fontWeight: 'bold' }}>450</Text>
                         </View>
                     </View>
+
+                    {/* Popup more */}
+                    {popup &&
+                        <View style={styles.profileReportPopup}>
+                            <TouchableOpacity style={styles.profileReportPopupLink}
+                                onPress={() => {
+                                    setPopup(false)
+                                    setShowReport(true)
+                                }}
+                            >
+                                <Text>Report</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.profileReportPopupLink}
+                                onPress={() => {
+                                    setPopup(false)
+                                    userBlockHandler()
+                                }}
+                            >
+                                <Text>Block</Text>
+                            </TouchableOpacity>
+                        </View>
+                    }
                 </View>
             </View>
         )
@@ -206,7 +234,7 @@ const UserProfileModal = (props) => {
                         onStartShouldSetResponder={() => setPopup(false)}
                     >
                         {renderHeader()}
-                        <View style={{ paddingVertical: 0, marginBottom: 180 }}>
+                        <View style={{ paddingVertical: 0, marginBottom: 140 }}>
                             {loading ? <ActivityIndicator size='large' color='#00639c' style={{ marginTop: 20 }} /> : null}
                             {posts.length === 0 && <Text style={styles.noData}>{noData}</Text>}
                             <FlatList
@@ -228,23 +256,23 @@ const UserProfileModal = (props) => {
                         </View>
                     </View>
                 </Container>
+
+                {showReport &&
+                    <UserReportModal
+                        viewUser={viewUser} loggedInUser={loggedInUser} showReport={showReport} setShowReport={setShowReport}
+                    />
+                }
+
+                {hashtagModal &&
+                    <Hashtag user={loggedInUser}
+                        isVisible={hashtagModal} setIsVisible={setHashtagModal}
+                        hashTag={hashTag} setHashTag={setHashTag}
+                    />
+                }
+
+                {loader && <Loader />}
+
             </Modal>
-
-
-            {showReport &&
-                <UserReportModal
-                    viewUser={viewUser} loggedInUser={loggedInUser} showReport={showReport} setShowReport={setShowReport}
-                />
-            }
-
-
-            {hashtagModal &&
-                <Hashtag user={loggedInUser}
-                    isVisible={hashtagModal} setIsVisible={setHashtagModal}
-                    hashTag={hashTag} setHashTag={setHashTag}
-                />
-            }
-
         </>
     )
 }

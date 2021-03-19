@@ -19,6 +19,7 @@ export const ProfilePosts = props => {
     const [loadmore, setLoadmore] = useState(false)
     const [hashTag, setHashTag] = useState({})
     const [hashtagModal, setHashtagModal] = useState(false)
+    let isMount = true
 
     useEffect(() => {
         getCreatorPosts()

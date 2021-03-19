@@ -8,7 +8,7 @@ import HashtagPost from '../../../components/HashtagPost'
 import { Loader } from '../../../components/Loader'
 
 const Hashtag = (props) => {
-    const StatusBarStyle = Platform.OS === 'ios' ? 'light-content' : 'light-content'
+    const StatusBarStyle = Platform.OS === 'ios' ? 'dark-content' : 'light-content'
     const { isVisible, setIsVisible, hashTag, setHashTag, user } = props
     let isMount = true
 
@@ -25,9 +25,9 @@ const Hashtag = (props) => {
     const [ptypeList, setPtypeList] = useState([])
     const [sortByList, setSortByList] = useState([])
     const [filterLoading, setFilterLoading] = useState(false)
-    const [subHashTag, setSubHashTag] = useState({})
     const [hashtagModal, setHashtagModal] = useState(false)
     const [loader, setLoader] = useState(false)
+    const [follow, setFollow] = useState({})
 
     useEffect(() => {
         getFilters()
@@ -47,7 +47,7 @@ const Hashtag = (props) => {
         formData.append('user_id', user.data.session_id)
         formData.append('type', 'hash')
         formData.append('to_id', hashTag.id)
-        // console.log("Hashtag follow: ", JSON.stringify(formData))
+        // console.log("Hashtag follow: ", JSON.stringify(hashTag))
 
         await httpService(url, 'POST', formData)
             .then(res => res.json())
@@ -55,9 +55,12 @@ const Hashtag = (props) => {
                 if (json.status === 0) {
                     alert(json.msg)
                 } else {
-                    if (isMount) alert(json.msg)
+                    if (isMount) {
+                        alert(json.msg)
+                        setFollow(json)
+                    }
                 }
-                // console.log("Hashtag follow: ", JSON.stringify(json))
+                console.log("Hashtag follow: ", JSON.stringify(json))
             })
             .catch(error => { alert(error); console.log(error) })
     }
@@ -78,9 +81,9 @@ const Hashtag = (props) => {
                 // console.log("Hashtag Posts: ", JSON.stringify(json))
                 setFilterLoading(false)
             })
-            .catch(error => { 
+            .catch(error => {
                 alert(error)
-                console.log(error) 
+                console.log(error)
                 setFilterLoading(false)
             })
     }
@@ -137,10 +140,10 @@ const Hashtag = (props) => {
                     // console.log("Hashtag Filters Posts: ", JSON.stringify(json))
                     setFilterLoading(false)
                 })
-                .catch(error => { 
+                .catch(error => {
                     alert(error)
                     console.log(error)
-                    setFilterLoading(false) 
+                    setFilterLoading(false)
                 })
         }
     }
@@ -164,9 +167,9 @@ const Hashtag = (props) => {
                     // console.log("Hashtag Sort by Posts: ", JSON.stringify(json))
                     setFilterLoading(false)
                 })
-                .catch(error => { 
+                .catch(error => {
                     alert(error)
-                    console.log(error) 
+                    console.log(error)
                     setFilterLoading(false)
                 })
         }
@@ -224,59 +227,70 @@ const Hashtag = (props) => {
                         <Text style={{ alignSelf: 'flex-start', marginLeft: -40, color: '#333', fontSize: 12 }}>{hashTag.followers_count}</Text>
                     </Body>
                     <Right style={{ flex: 0.3 }}>
-                        <TouchableOpacity
-                            onPress={() => followHandler()}
-                            style={[styles.vhCenter, {
-                                borderWidth: 1, borderColor: '#00639c', borderRadius: 8, width: 90, height: 35,
-                            }]}
-                        >
-                            <Text style={{ color: '#00639c', fontWeight: 'bold' }}>FOLLOW</Text>
-                        </TouchableOpacity>
+                        {
+                            follow.status === 1 || hashTag.to_id === user.data.session_id ?
+                                <View
+                                    style={[styles.vhCenter, {
+                                        borderWidth: 1, borderColor: '#00639c', borderRadius: 8, width: 120, height: 35, backgroundColor: '#00639c'
+                                    }]}
+                                >
+                                    <Text style={{ color: '#fff', fontWeight: 'bold' }}>FOLLOWING</Text>
+                                </View>
+                                :
+                                <TouchableOpacity
+                                    onPress={() => followHandler()}
+                                    style={[styles.vhCenter, {
+                                        borderWidth: 1, borderColor: '#00639c', borderRadius: 8, width: 90, height: 35,
+                                    }]}
+                                >
+                                    <Text style={{ color: '#00639c', fontWeight: 'bold' }}>FOLLOW</Text>
+                                </TouchableOpacity>
+                        }
                     </Right>
                 </Header>
 
                 {/* Filters */}
                 {data.length > 0 ?
-                <View style={[styles.row, { marginTop: 10, marginBottom: 10 }]}>
-                    <Item picker style={styles.filterSelect}>
-                        <Picker
-                            mode="dropdown"
-                            style={styles.filterPicker}
-                            selectedValue={filters}
-                            onValueChange={value => filtersOnchange(value)}
-                        >
-                            <Picker.Item label="Filters" value={0} />
-                            {ptypeList.length > 0 ? ptypeList.map(item => {
-                                return <Picker.Item key={item.id} label={item.name} value={item.id} />
-                            }) : null}
-                        </Picker>
-                    </Item>
-                    <Item picker style={styles.filterSelect}>
-                        <Picker
-                            mode="dropdown"
-                            style={styles.filterPicker}
-                            selectedValue={sortBy}
-                            onValueChange={value => sortByOnchange(value)}
-                        >
-                            <Picker.Item label="Sort by" value={0} />
-                            {sortByList.length > 0 ? sortByList.map(item => {
-                                return <Picker.Item key={item.id} label={item.name} value={item.id} />
-                            }) : null}
-                        </Picker>
-                    </Item>
-                    <Item picker style={styles.filterSelect}>
-                        <Picker
-                            mode="dropdown"
-                            style={styles.filterPicker}
-                            selectedValue={datePosted}
-                            onValueChange={value => datePostedOnchange(value)}
-                        >
-                            <Picker.Item label="Date posted" value="select" />
-                        </Picker>
-                    </Item>
-                </View>
-                : null}
-                {filterLoading  ? <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} /> : null}
+                    <View style={[styles.row, { marginTop: 10, marginBottom: 10 }]}>
+                        <Item picker style={styles.filterSelect}>
+                            <Picker
+                                mode="dropdown"
+                                style={styles.filterPicker}
+                                selectedValue={filters}
+                                onValueChange={value => filtersOnchange(value)}
+                            >
+                                <Picker.Item label="Filters" value={0} />
+                                {ptypeList.length > 0 ? ptypeList.map(item => {
+                                    return <Picker.Item key={item.id} label={item.name} value={item.id} />
+                                }) : null}
+                            </Picker>
+                        </Item>
+                        <Item picker style={styles.filterSelect}>
+                            <Picker
+                                mode="dropdown"
+                                style={styles.filterPicker}
+                                selectedValue={sortBy}
+                                onValueChange={value => sortByOnchange(value)}
+                            >
+                                <Picker.Item label="Sort by" value={0} />
+                                {sortByList.length > 0 ? sortByList.map(item => {
+                                    return <Picker.Item key={item.id} label={item.name} value={item.id} />
+                                }) : null}
+                            </Picker>
+                        </Item>
+                        <Item picker style={styles.filterSelect}>
+                            <Picker
+                                mode="dropdown"
+                                style={styles.filterPicker}
+                                selectedValue={datePosted}
+                                onValueChange={value => datePostedOnchange(value)}
+                            >
+                                <Picker.Item label="Date posted" value="select" />
+                            </Picker>
+                        </Item>
+                    </View>
+                    : null}
+                {filterLoading ? <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} /> : null}
                 {data.length > 0 ?
                     <FlatList
                         data={data}

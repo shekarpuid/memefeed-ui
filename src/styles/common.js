@@ -91,8 +91,8 @@ export default StyleSheet.create({
     pTabLink: {padding: 10, marginHorizontal: 15},
     pTabLinkText: { alignSelf: 'center', fontSize: 16 },
     profileReportPopup: {
-        position: 'absolute', top: 35, right: 10, backgroundColor: '#fff', width: 100,
-        shadowColor: 'rgba(0,0,0,.25)', shadowOffset: {width: 2, height: 2}, elevation: 5,
+        position: 'absolute', top: 50, right: 10, backgroundColor: '#fff', width: 100,
+        shadowColor: 'rgba(0,0,0,.25)', shadowOffset: {width: 2, height: 2}, elevation: 5, zIndex: 99,
         borderColor: '#ddd', borderWidth: 1
     },
     profileReportPopupLink: {paddingHorizontal: 20, paddingVertical: 10},

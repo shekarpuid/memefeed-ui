@@ -13,16 +13,24 @@ import UserProfileModal from './UserProfileModal';
 // User component
 const User = (props) => {
 	const { user, imageUrl, followHandler, toIds, item, setViewUser, setIsVisible } = props
-	const isNumber = id => id == user.id
-	let indexId = toIds.findIndex(isNumber)
+	let indexId = toIds.findIndex(id => id == item.id)
 	let http = item.profile_image.search('https')
+	let isMount = true
 
 	useEffect(() => {
-		console.log(JSON.stringify(item))
+		// console.log("User item:" + JSON.stringify(item))
+		// console.log(indexId)
 		return () => {
 			isMount = false
 		}
 	}, [])
+
+	useEffect(() => {
+		// const isNumber = id => id == user.id
+		// indexId = toIds.findIndex(id => id == user.id)
+		console.log("toIds: " + JSON.stringify(toIds))
+		console.log("indexId: " + JSON.stringify(indexId))
+	}, [toIds])
 
 	return (
 		<>
@@ -30,10 +38,10 @@ const User = (props) => {
 				<Left>
 					{/* <Thumbnail source={user.profile_image === null || user.profile_image === '' ? { uri: defaultAvatar } : { uri: imageUrl }} /> */}
 					<Thumbnail
-						source={item.profile_image === null || item.profile_image === '' ? defaultAvatar 
-						: http >= 0 ? { uri: item.profile_image }
-						: item.profile_image.length > 0 ? { uri: imageUrl } :
-								defaultAvatar}
+						source={item.profile_image === null || item.profile_image === '' ? defaultAvatar
+							: http >= 0 ? { uri: item.profile_image }
+								: item.profile_image.length > 0 ? { uri: imageUrl } :
+									defaultAvatar}
 					/>
 				</Left>
 				<Body>
@@ -73,7 +81,7 @@ const User = (props) => {
 							marginRight: 4,
 							borderWidth: 1,
 							borderColor: 'gray'
-						}} onPress={() => followHandler(user)}>
+						}} onPress={() => followHandler(item)}>
 							<Text style={{ color: '#000000', fontWeight: 'bold' }}>Follow</Text>
 						</TouchableOpacity>
 					}
@@ -259,7 +267,9 @@ export const Search = (props) => {
 		return <Text style={styles.noData}>No users to display.</Text>
 	}
 
+	// Follow handler
 	const followHandler = async (followUser) => {
+		// console.log("followUser: ", JSON.stringify(followUser))
 		setResponse({})
 		setLoader(true)
 		let userType = ''
@@ -287,7 +297,7 @@ export const Search = (props) => {
 				} else {
 					alert(json.msg)
 				}
-				// console.log("User follow: ", JSON.stringify(json))
+				// console.log("User follow response: ", JSON.stringify(json))
 				setLoader(false)
 			})
 			.catch(error => {
@@ -351,16 +361,16 @@ export const Search = (props) => {
 			{renderSegment()}
 			<ScrollView>
 				{loading ? <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} /> : <List>{renderUsers()}</List>}
-				{loader ? <Loader /> : null}
 			</ScrollView>
 
 			{isVisible &&
 				<UserProfileModal
-					viewUser={viewUser} loggedInUser={user} 
-					isVisible={isVisible} setIsVisible={setIsVisible} 
+					viewUser={viewUser} loggedInUser={user}
+					isVisible={isVisible} setIsVisible={setIsVisible}
 					onHomePostSend={onHomePostSend} postTypes={postTypes} showPosts={showPosts} setShowPosts={setShowPosts}
 				/>
 			}
+			{loader ? <Loader /> : null}
 		</>
 	)
 }
