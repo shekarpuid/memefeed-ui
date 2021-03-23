@@ -131,6 +131,8 @@ const Hashtag = (props) => {
             const formData = new FormData()
             formData.append('user_id', user.data.session_id)
             formData.append('post_type_filter_id', value)
+            formData.append('hashtag_id', hashTag.id)
+             
             // console.log("Hashtag follow: ", JSON.stringify(formData))
 
             await httpService(url, 'POST', formData)
@@ -158,6 +160,7 @@ const Hashtag = (props) => {
             const formData = new FormData()
             formData.append('user_id', user.data.session_id)
             formData.append('sort_filter_id', value)
+            formData.append('sort_hashtag_id', hashTag.id)
             // console.log("Hashtag follow: ", JSON.stringify(formData))
 
             await httpService(url, 'POST', formData)
