@@ -27,11 +27,13 @@ import ChangeName from './ChangeName'
 import ChangePassword from './ChangePassword'
 import ChangeDisplayPicture from './ChangeDisplayPicture'
 import ChangeHandleName from './ChangeHandleName'
-import AccountUpgadation from './AccountUpgadation'
+import AccountUpgradation from './AccountUpgradation'
 import ChangePrivacy from './ChangePrivacy'
 import ManageBlockList from './ManageBlockList'
 import DrawerContent from '../components/DrawerContent'
 import DeleteAccount from './DeleteAccount'
+import ChangeMasterPassword from './ChangeMasterPassword'
+import MonetiseAccount from './MonetiseAccount'
 
 // Stacks
 const Stack = createStackNavigator()
@@ -39,6 +41,8 @@ const Drawer = createDrawerNavigator()
 
 function Routes(props) {
   const { user } = props
+
+  // console.log(JSON.stringify(user))
 
   function DrawerRoutes(props) {
     return (
@@ -57,14 +61,6 @@ function Routes(props) {
           }
         }}
       >
-        {/* <Drawer.Screen name="Main" component={Main} />
-        <Drawer.Screen name="ChangeName" component={ChangeName} />
-        <Drawer.Screen name="ChangeHandleName" component={ChangeHandleName} />
-        <Drawer.Screen name="ChangeDisplayPicture" component={ChangeDisplayPicture} />
-        <Drawer.Screen name="AccountUpgadation" component={AccountUpgadation} />
-        <Drawer.Screen name="ChangePrivacy" component={ChangePrivacy} />
-        <Drawer.Screen name="DeleteAccount" component={DeleteAccount} />
-        <Drawer.Screen name="ManageBlockList" component={ManageBlockList} /> */}
         <Drawer.Screen name="Main" component={Main}
           options={{
             drawerLabel: 'Home', activeTintColor: '#00639c', inactiveTintColor: '#fff',
@@ -91,7 +87,6 @@ function Routes(props) {
         />
         <Fragment>
           {user.data.login_with === 'signup' ?
-
             <Drawer.Screen name="ChangePassword" component={ChangePassword}
               options={{
                 drawerLabel: 'Change Password',
@@ -99,7 +94,16 @@ function Routes(props) {
               }}
             /> : null}
         </Fragment>
-        <Drawer.Screen name="AccountUpgadation" component={AccountUpgadation}
+        <Fragment>
+          {user.data.login_with === 'signup' ?
+            <Drawer.Screen name="ChangeMasterPassword" component={ChangeMasterPassword}
+              options={{
+                drawerLabel: 'Change Master Password',
+                drawerIcon: ({ focused }) => <Ionicon size={20} color={focused ? '#fff' : '#333'} name={Platform.OS === 'android' ? 'md-lock-closed-outline' : 'ios-lock-closed-outline'} />
+              }}
+            /> : null}
+        </Fragment>
+        <Drawer.Screen name="AccountUpgradation" component={AccountUpgradation}
           options={{
             // drawerLabel: 'Request for the Upgradation to Creator Account',
             drawerLabel: ({focused}) => <Text style={{color: focused ? '#fff' : '#333', marginLeft: -15, marginRight: -25}}>Request for the Upgradation to Creator Account</Text>,
@@ -116,6 +120,12 @@ function Routes(props) {
         <Drawer.Screen name="DeleteAccount" component={DeleteAccount}
           options={{
             drawerLabel: 'Delete Account',
+            drawerIcon: ({ focused }) => <Ionicon size={20} color={focused ? '#fff' : '#333'} name={Platform.OS === 'android' ? 'md-trash-outline' : 'ios-trash-outline'} />
+          }}
+        />
+        <Drawer.Screen name="MonetiseAccount" component={MonetiseAccount}
+          options={{
+            drawerLabel: 'Monetise Account',
             drawerIcon: ({ focused }) => <Ionicon size={20} color={focused ? '#fff' : '#333'} name={Platform.OS === 'android' ? 'md-trash-outline' : 'ios-trash-outline'} />
           }}
         />
