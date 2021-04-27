@@ -86,7 +86,7 @@ const CommentsList = ({ post, user, submit, setSubmit,  setLoaded }) => {
     return (
         <Content>
             {comments.length > 0 ?
-                <Item picker style={{ backgroundColor: '#ddd', paddingHorizontal: 10, width: 220, marginVertical: 20, marginLeft: 20, borderRadius: 5, borderStyle: 'solid', borderWidth: 1, borderColor: '#ddd' }}>
+                <Item picker style={{ backgroundColor: '#ddd', paddingHorizontal: 10, width: 220, height: 40, marginVertical: 20, marginLeft: 20, borderRadius: 5, borderStyle: 'solid', borderWidth: 1, borderColor: '#ddd' }}>
                     <Picker
                         mode="dropdown"
                         style={{ width: '100%' }}

@@ -6,6 +6,7 @@ import RNFetchBlob from 'rn-fetch-blob'
 import ShareImg from '../../assets/Share.png'
 import ShareColour from '../../assets/Share_Colour.png'
 import Share from 'react-native-share'
+import styles from '../styles/common'
 
 export const PostShare = ({ post, user, shared, setShared }) => {
     // const imageUrl = `${env.baseUrl}static/images/${post.post_image}`
@@ -54,7 +55,7 @@ export const PostShare = ({ post, user, shared, setShared }) => {
                     shared === 'share' ? ShareColour : ShareImg
                 }
                 resizeMode="stretch"
-                style={{ width: 30, height: 30 }}
+                style={styles.postIcon}
             />
             <View>
                 {/* <Text style={{ marginLeft: 2 }}>36</Text> */}

@@ -37,7 +37,7 @@ const User = (props) => {
 			<ListItem avatar key={item.id} >
 				<Left>
 					{/* <Thumbnail source={user.profile_image === null || user.profile_image === '' ? { uri: defaultAvatar } : { uri: imageUrl }} /> */}
-					<Thumbnail
+					<Thumbnail style={styles.postAvatar}
 						source={item.profile_image === null || item.profile_image === '' ? defaultAvatar
 							: http >= 0 ? { uri: item.profile_image }
 								: item.profile_image.length > 0 ? { uri: imageUrl } :
@@ -51,9 +51,9 @@ const User = (props) => {
 							setViewUser(item)
 						}}
 					>
-						<Text>{item.name}</Text>
+						<Text style={{fontWeight: 'bold', fontSize: 14}}>{item.name}</Text>
 					</TouchableOpacity>
-					<Text note>{item.handle_name}</Text>
+					<Text note  style={{fontWeight: 'bold', fontSize: 12}}>{item.handle_name}</Text>
 				</Body>
 				<Right>
 					{indexId >= 0 || item.to_id === user.data.session_id ?
@@ -62,11 +62,11 @@ const User = (props) => {
 								backgroundColor: '#00639c',
 								justifyContent: 'center',
 								alignItems: 'center',
-								width: 120,
-								height: 40,
+								width: 100,
+								height: 30,
 								marginRight: 4,
 								borderWidth: 1,
-								borderColor: '#00639c'
+								borderColor: '#00639c', borderRadius: 4
 							}
 						}>
 							<Text style={{ color: '#fff', fontWeight: 'bold' }}>Following</Text>
@@ -76,11 +76,11 @@ const User = (props) => {
 							backgroundColor: '#fff',
 							justifyContent: 'center',
 							alignItems: 'center',
-							width: 120,
-							height: 40,
+							width: 100,
+							height: 30,
 							marginRight: 4,
 							borderWidth: 1,
-							borderColor: 'gray'
+							borderColor: 'gray', borderRadius: 4
 						}} onPress={() => followHandler(item)}>
 							<Text style={{ color: '#000000', fontWeight: 'bold' }}>Follow</Text>
 						</TouchableOpacity>
@@ -149,10 +149,10 @@ export const Search = (props) => {
 			height: 40,
 			marginRight: 4,
 			borderWidth: 1,
-			borderColor: 'gray'
+			borderColor: 'gray',
+			borderRadius: 30
 		}
 		if (index === selectedIndex) {
-			buttonStyle.borderRadius = 15
 			buttonStyle.backgroundColor = '#00639c',
 				buttonStyle.borderWidth = 0
 		}

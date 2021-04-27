@@ -5,6 +5,7 @@ import { encode } from 'base-64'
 import { env } from '../env'
 import Up from '../../assets/Up_Arrow.png'
 import UpColor from '../../assets/Up_Arrow_Colour.png'
+import styles from '../styles/common'
 
 export const PostLike = ({ post, user, selectedVote, setSelectedVote, response, setResponse }) => {
 
@@ -63,7 +64,7 @@ export const PostLike = ({ post, user, selectedVote, setSelectedVote, response, 
                                 : Up
                 }
                 resizeMode="stretch"
-                style={{ width: 30, height: 30 }}
+                style={styles.postIcon}
             />
             <View>
                 <Text style={{ marginLeft: 2 }}>

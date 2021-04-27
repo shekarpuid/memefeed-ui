@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { View, FlatList, Dimensions, Platform, NativeModules, TouchableOpacity } from 'react-native'
-import { Container, Text, Button, Header, Spinner, Item, Input, Modal } from 'native-base'
+import { Container, Text, Button, Header, Spinner, Item, Input, Modal, H3 } from 'native-base'
 import styles from '../../styles/common'
 import Ionicon from 'react-native-vector-icons/dist/Ionicons'
-import UseFetch from '../../hooks/UseFetch'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { httpService } from '../../utils'
 import Hashtag from './Hashtag/Hashtag'
 
@@ -39,7 +37,6 @@ const HashTags = (props) => {
                     alert(json.msg)
                 } else {
                     if (isMount) setHashTags(json.data)
-
                 }
                 // console.log("Hashtags: ", JSON.stringify(json))
                 setLoading(false)
@@ -54,7 +51,7 @@ const HashTags = (props) => {
 
     const Tag = ({ item, name, index }) => (
         <View style={styles.hashTagItem}>
-            <Text style={[styles.hashTagText, styles.hashTagIndex]}>{index + 1}.</Text>
+            {/* <Text style={[styles.hashTagText, styles.hashTagIndex]}>{index + 1}.</Text> */}
             <View>
                 <TouchableOpacity onPress={() => {
                     setIsVisible(true)
@@ -62,7 +59,7 @@ const HashTags = (props) => {
                 }}>
                     <Text style={[styles.hashTagText, styles.hashTagName]}>#{name}</Text>
                 </TouchableOpacity>
-                <Text style={[styles.hashTagSub]}>3k memes</Text>
+                <Text style={[styles.hashTagSub]}>{item.followers_count}</Text>
             </View>
         </View>
     )
@@ -122,6 +119,8 @@ const HashTags = (props) => {
             </Header>
 
             <View>
+                <H3 style={{fontSize: 25, fontWeight: 'bold', marginTop: 10, marginLeft: 15, color: '#00639c', fontStyle: 'italic'}}>Trending</H3>
+
                 {loading ? <Spinner color="#00639c" style={{ marginTop: 10, alignSelf: 'center' }} /> : null}
                 {hashTags !== null && hashTags.status === 0 ? <Text style={{ marginTop: 20, alignSelf: 'center' }}>{hashTags.msg}.</Text> :
                     hashTags !== null ?

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import { Text } from 'react-native'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -8,6 +8,10 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import Ionicon from 'react-native-vector-icons/dist/Ionicons'
 import MIcon from 'react-native-vector-icons/dist/MaterialIcons'
+
+import PushNotificationIOS from "@react-native-community/push-notification-ios";
+import PushNotification from "react-native-push-notification";
+import Firebase from '@react-native-firebase/app'
 
 // import Dashboard from './Dashboard'
 import BasicLogin from './BasicLogin'
@@ -34,23 +38,80 @@ import DrawerContent from '../components/DrawerContent'
 import DeleteAccount from './DeleteAccount'
 import ChangeMasterPassword from './ChangeMasterPassword'
 import MonetiseAccount from './MonetiseAccount'
+import { fetchNotifsData } from '../actions/notifsActions'
 
 // Stacks
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
 
 function Routes(props) {
-  const { user } = props
+  const { user, fetchNotifsData } = props
 
   // console.log(JSON.stringify(user))
 
+  useEffect(() => {
+    Firebase.initializeApp()
+
+    // Must be outside of any component LifeCycle (such as `componentDidMount`).
+    PushNotification.configure({
+      // (optional) Called when Token is generated (iOS and Android)
+      onRegister: function (token) {
+        console.log("TOKEN:", token);
+      },
+
+      // (required) Called when a remote is received or opened, or local notification is opened
+      onNotification: function (notification) {
+        console.log("NOTIFICATION:", notification);
+        fetchNotifsData(notification.data)
+
+        // process the notification
+
+        // (required) Called when a remote is received or opened, or local notification is opened
+        notification.finish(PushNotificationIOS.FetchResult.NoData);
+      },
+
+      // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
+      onAction: function (notification) {
+        console.log("ACTION:", notification.action);
+        console.log("NOTIFICATION:", notification);
+
+        // process the action
+      },
+
+      // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
+      onRegistrationError: function (err) {
+        console.error(err.message, err);
+      },
+
+      // IOS ONLY (optional): default: all - Permissions to register.
+      permissions: {
+        alert: true,
+        badge: true,
+        sound: true,
+      },
+
+      // Should the initial notification be popped automatically
+      // default: true
+      popInitialNotification: true,
+
+      /**
+       * (optional) default: true
+       * - Specified if permissions (ios) and token (android and ios) will requested or not,
+       * - if not, you must call PushNotificationsHandler.requestPermissions() later
+       * - if you are not using remote notification or do not have Firebase installed, use this:
+       *     requestPermissions: Platform.OS === 'ios'
+       */
+      requestPermissions: true,
+    });
+  }, [])
+
   function DrawerRoutes(props) {
     return (
-      <Drawer.Navigator 
-        initialRouteName="Main" 
+      <Drawer.Navigator
+        drawerPosition="right"
+        initialRouteName="Main"
         drawerContent={props => <DrawerContent {...props} />}
-        drawerContentOptions
-      // <Drawer.Navigator initialRouteName="Main"
+        // <Drawer.Navigator initialRouteName="Main"
         drawerContentOptions={{
           activeTintColor: '#fff',
           activeBackgroundColor: '#00639c',
@@ -106,14 +167,14 @@ function Routes(props) {
         <Drawer.Screen name="AccountUpgradation" component={AccountUpgradation}
           options={{
             // drawerLabel: 'Request for the Upgradation to Creator Account',
-            drawerLabel: ({focused}) => <Text style={{color: focused ? '#fff' : '#333', marginLeft: -15, marginRight: -25}}>Request for the Upgradation to Creator Account</Text>,
+            drawerLabel: ({ focused }) => <Text style={{ color: focused ? '#fff' : '#333', marginLeft: -15, marginRight: -25 }}>Request for the Upgradation to Creator Account</Text>,
             drawerIcon: ({ focused }) => <Ionicon size={20} color={focused ? '#fff' : '#333'} name={Platform.OS === 'android' ? 'md-school-outline' : 'ios-school-outline'} />
           }}
         />
         <Drawer.Screen name="ChangePrivacy" component={ChangePrivacy}
           options={{
             // drawerLabel: 'Change Account privacy Private or Public',
-            drawerLabel: ({focused}) => <Text style={{color: focused ? '#fff' : '#333', marginLeft: -15, marginRight: -25}}>Change Account Privacy to Private or Public</Text>,
+            drawerLabel: ({ focused }) => <Text style={{ color: focused ? '#fff' : '#333', marginLeft: -15, marginRight: -25 }}>Change Account Privacy to Private or Public</Text>,
             drawerIcon: ({ focused }) => <Ionicon size={20} color={focused ? '#fff' : '#333'} name={Platform.OS === 'android' ? 'md-lock-open-outline' : 'ios-lock-open-outline'} />
           }}
         />
@@ -166,7 +227,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    // handleSetUserData: setUserData
+    fetchNotifsData: fetchNotifsData
   }, dispatch)
 }
 

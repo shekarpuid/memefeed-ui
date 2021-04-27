@@ -31,15 +31,27 @@ const Main = (props) => {
     const {
         loading, posts, hasErrors, postTypes, user,
         handleLoadPostTypes, handleFetchPosts, handleCreateNewPost,
-        navigation, route
+        navigation, route, notifData
     } = props
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [showPosts, setShowPosts] = useState(false)
     const [profile, setProfile] = useState(null)
 
     useEffect(() => {
+        console.log("Main notifData: ", JSON.stringify(notifData))
+        if (Object.keys(notifData).length > 0) {
+            if (notifData.new === 'new post') {
+                // props.navigation.navigate('ChangeName')
+                setSelectedTabIndex(4)
+                // alert('Navigate here!!')
+            }
+        }
+    }, [notifData])
+
+    useEffect(() => {
         handleFetchPosts()
         handleLoadPostTypes()
+        // console.log(JSON.stringify(navigation))
         return () => {
             // alert("Unmount")
             BackHandler.removeEventListener()
@@ -106,7 +118,7 @@ const Main = (props) => {
             />
         )
         if (selectedTabIndex === 3) return <Notification />
-        if (selectedTabIndex === 4) return <Profile user={user} 
+        if (selectedTabIndex === 4) return <Profile user={user} navigation={props.navigation}
                 setSelectedTabIndex={setSelectedTabIndex} getaActive={getaActive} 
                 onHomePostSend={(data) => handlePostCreate(data)}
                 postTypes={postTypes} showPosts={showPosts} setShowPosts={setShowPosts}
@@ -142,7 +154,8 @@ const Main = (props) => {
                 {/* <DoubleTapToClose /> */}
 
                 {/* App header */}
-                {selectedTabIndex === 0 || selectedTabIndex === 2 || selectedTabIndex === 3 || selectedTabIndex === 4 ? <Headers selectedTabIndex={selectedTabIndex} setShowPosts={setShowPosts} showPosts={showPosts} /> : null}
+                {selectedTabIndex === 0 || selectedTabIndex === 2 || selectedTabIndex === 3 || selectedTabIndex === 4 ? 
+                <Headers selectedTabIndex={selectedTabIndex} setShowPosts={setShowPosts} showPosts={showPosts} navigation={navigation} /> : null}
 
                 {/* App tab */}
                 {/* <Content refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
@@ -198,7 +211,8 @@ function mapStateToProps(state) {
         posts: state.posts.posts,
         hasErrors: state.posts.hasErrors,
         createPost: state.createPost,
-        postTypes: state.postTypes
+        postTypes: state.postTypes,
+        notifData: state.notifData.notifData
     }
 }
 

@@ -5,6 +5,7 @@ import { encode } from 'base-64'
 import { env } from '../env'
 import Down from '../../assets/Down_Arrow.png'
 import DownColor from '../../assets/Down_Arrow_Colour.png'
+import styles from '../styles/common'
 
 export const PostDisLike = ({ post, user, selectedVote, setSelectedVote, response, setResponse }) => {
 
@@ -63,7 +64,7 @@ export const PostDisLike = ({ post, user, selectedVote, setSelectedVote, respons
                             : Down
                 }
                 resizeMode="stretch"
-                style={{ width: 30, height: 30 }}
+                style={styles.postIcon}
             />
             <View>
                 <Text style={{ marginLeft: 2 }}>

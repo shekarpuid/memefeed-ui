@@ -110,7 +110,7 @@ const Comment = ({ comment, user, post, setComments, setLoaded }) => {
                 <View style={{ flex: 1, flexDirection: 'row' }}>
 
                     {/* Comment user pic */}
-                    <Thumbnail style={{ width: 50, height: 50 }}
+                    <Thumbnail style={{ width: 35, height: 35 }}
                         source={comment.profile_image === null ||
                             comment.profile_image === undefined ||
                             comment.profile_image.length === 0 ? defaultAvatar :
@@ -195,7 +195,7 @@ const Comment = ({ comment, user, post, setComments, setLoaded }) => {
                     <TouchableOpacity
                         onPress={() => setShowReply(true)}
                         style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 20 }}>
-                        <Image source={CommentImg}
+                        <Image source={ comment.comment_count > 0 ? CommentColor : CommentImg}
                             // source={
                             //     share !== '' && share === 'comment'
                             //         ? CommentColor

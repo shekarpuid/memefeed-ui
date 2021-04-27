@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
-import { Text, Button, Header, Left, Body, Right, Title, Item, Input } from 'native-base'
+import { Text, Button, Header, Left, Body, Right, Title } from 'native-base'
 import { connect } from 'react-redux'
-import { Image, Platform } from 'react-native'
+import { Image, Platform, View } from 'react-native'
 import styles from '../../styles/common'
 // import Logo from '../../../assets/home-logo.png'
 import Logo from '../../../assets/logo.png'
 import Ionicon from 'react-native-vector-icons/dist/Ionicons'
 
 const Headers = (props) => {
-    const { selectedTabIndex, setShowPosts, showPosts, user } = props
+    const { selectedTabIndex, setShowPosts, showPosts, user, navigation } = props
     // useEffect(() => {
     // alert(JSON.stringify(user))
     // }, [showPosts])
@@ -63,26 +63,35 @@ const Headers = (props) => {
                 <Header searchBar style={{ backgroundColor: '#00639c', height: 0 }} androidStatusBarColor="#00639c" iosBarStyle='light-content' />
             )
         }
-        
+
         // Dashboard Header
         return (
             <Header style={{ backgroundColor: '#00639c' }} androidStatusBarColor="#00639c" iosBarStyle={StatusBarStyle}>
-                {selectedTabIndex !== 3 ? <Left style={{ flex: 0.1 }}>
-                    <Image source={Logo} style={styles.logo} />
-                </Left> : null}
+                {selectedTabIndex !== 3 ?
+                    <View style={{ flex: 0.6, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        {/* <Button transparent onPress={() => navigation.openDrawer()}
+                            style={{ flex: 0.4, width: 50 }}
+                        >
+                            <Ionicon name="ios-menu-outline" color="#fff" style={[styles.fs25, { alignSelf: 'flex-start' }]} />
+                        </Button> */}
+                        <Left style={{ flex: 0.6, flexDirection: 'row', justifyContent: 'space-between' }}>
+
+                            <Image source={Logo} style={[styles.logo, { alignSelf: 'flex-end' }]} />
+                        </Left>
+                    </View> : null}
                 <Body>
                     {/* <Title
                 style={{fontStyle: 'italic', fontWeight: 'bold', marginLeft: 5}}>
                 {displayContent.value}
               </Title> */}
                 </Body>
-                <Right style={{ flex: 0.3 }}>
+                <Right style={{ flex: 0.4 }}>
                     {user.data !== null && user.data !== undefined &&
                         user.data.user_type !== 'User' ? (
-                            <Button transparent onPress={() => setShowPosts(true)}>
-                                <Ionicon name="add-circle-outline" color="#fff" style={styles.fs25} />
-                            </Button>
-                        ) : null}
+                        <Button transparent onPress={() => setShowPosts(true)}>
+                            <Ionicon name="add-circle-outline" color="#fff" style={styles.fs25} />
+                        </Button>
+                    ) : null}
                 </Right>
             </Header>
         )

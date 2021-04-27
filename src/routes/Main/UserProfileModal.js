@@ -26,6 +26,8 @@ const UserProfileModal = (props) => {
     const [hashTag, setHashTag] = useState({})
     const [hashtagModal, setHashtagModal] = useState(false)
     const [loader, setLoader] = useState(false)
+	const [userInfo, setUserInfo] = useState({})
+	const [error, setError] = useState(0)
 
     const http = viewUser.profile_image.search("http")
 
@@ -33,11 +35,32 @@ const UserProfileModal = (props) => {
         console.log(JSON.stringify(viewUser))
         // console.log(JSON.stringify(loggedInUser))
         fetchUserPosts()
+        getUserInfo()
 
         return () => {
             isMount = false
         }
     }, [])
+    
+	// Get User Info
+    const getUserInfo = async () => {
+		const url = 'users/get_users_info'
+        const method = 'POST'
+		const formData = new FormData()
+        formData.append('user_id', viewUser.id)
+
+        await httpService(url, method, formData)
+            .then(res => res.json())
+            .then(json => {
+                if (isMount) setUserInfo(json.data[0])
+                // console.log("View User Profile User Info: ", JSON.stringify(json.data))
+            })
+            .catch(error => {
+                alert(error)
+                console.log(error)
+                setError(true)
+            })
+    }
 
     // ======================================================== Fetch hashtag data fn
     const getHashData = async (value) => {
@@ -143,14 +166,13 @@ const UserProfileModal = (props) => {
 
                         {/* Icons */}
                         <View style={{ flex: 0.3, flexDirection: 'row', justifyContent: 'space-between', paddingRight: 10 }}>
-                            <TouchableOpacity>
-                                <Icon name='thumbs-up-sharp' />
-                            </TouchableOpacity>
+                            <View>
+								<Ionicon name='chatbubble-ellipses-outline' style={{ fontSize: 30 }} />
+							</View>
                             <View>
                                 <TouchableOpacity onPress={() => setPopup(true)}>
-                                    <Ionicon name='ios-ellipsis-horizontal-circle' style={{ fontSize: 30 }} />
+                                    <Ionicon name='ios-settings-outline' style={{ fontSize: 30 }} />
                                 </TouchableOpacity>
-
                             </View>
                         </View>
                     </View>
@@ -161,19 +183,19 @@ const UserProfileModal = (props) => {
                             <View style={styles.profileIconBtn}>
                                 <Text style={{ fontWeight: 'bold' }}>Upvotes</Text>
                             </View>
-                            <Text style={{ fontWeight: 'bold' }}>180</Text>
+                            <Text style={{ fontWeight: 'bold' }}>{Object.keys(userInfo).length > 0 && userInfo.up_vote_count}</Text>
                         </View>
                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <View style={styles.profileIconBtn}>
                                 <Text style={{ fontWeight: 'bold' }}>Following</Text>
                             </View>
-                            <Text style={{ fontWeight: 'bold' }}>108</Text>
+                            <Text style={{ fontWeight: 'bold' }}>{Object.keys(userInfo).length > 0 && userInfo.following_count}</Text>
                         </View>
                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <View style={styles.profileIconBtn}>
                                 <Text style={{ fontWeight: 'bold' }}>Followers</Text>
                             </View>
-                            <Text style={{ fontWeight: 'bold' }}>450</Text>
+                            <Text style={{ fontWeight: 'bold' }}>{Object.keys(userInfo).length > 0 && userInfo.followers_count}</Text>
                         </View>
                     </View>
 

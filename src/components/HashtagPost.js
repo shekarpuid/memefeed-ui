@@ -145,7 +145,7 @@ const HashtagPost = ({ post, user, start, end, data, setData, setShowPosts, disp
                     style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Image
                         source={
-                            share !== '' && share === 'comment'
+                            post.comment_count > 0
                                 ? CommentColor
                                 : Comment
                         }

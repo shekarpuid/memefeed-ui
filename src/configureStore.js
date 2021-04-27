@@ -14,6 +14,7 @@ import postComments from './reducers/postCommentsReducer'
 import childCommentsReducer from './reducers/childCommentsReducer'
 import ForgotPasswordReducer from './reducers/ForgotPasswordReducer'
 import editPostReducer from './reducers/editPostReducer'
+import notifsReducer from './reducers/notifsReducer'
 
 const composeEnhancers = composeWithDevTools({}) 
 const rootReducer = combineReducers({
@@ -29,7 +30,8 @@ const rootReducer = combineReducers({
   postComments,
   childComments: childCommentsReducer,
   fuser: ForgotPasswordReducer,
-  editPost: editPostReducer
+  editPost: editPostReducer,
+  notifData: notifsReducer
 }) 
 const middleware = composeEnhancers(applyMiddleware(reduxThunk)) 
 const configureStore = () => {

@@ -7,18 +7,22 @@ import styles from '../../styles/common'
 import { env } from '../../env'
 import { ProfilePosts } from './Profile/ProfilePosts'
 import { ProfileAlbums } from './Profile/ProfileAlbums'
+import { httpService } from '../../utils'
 
 const Profile = (props) => {
-	const { setSelectedTabIndex, getaActive, user, postTypes, onHomePostSend, showPosts, setShowPosts } = props
+	const { setSelectedTabIndex, getaActive, user, postTypes, onHomePostSend, showPosts, setShowPosts, navigation } = props
 	const imageUrl = `${env.baseUrl}${user.data.profile_image}`
 	const [posts, setPosts] = useState(false)
 	const [albums, setAlbums] = useState(false)
 	const { height, width } = Dimensions.get('window')
 	const [filterMenu, setFilterMenu] = useState(false)
 	const [menuId, setMenuId] = useState(0)
+	const [userInfo, setUserInfo] = useState({})
+	const [error, setError] = useState(0)
 	let isMount = true
 
 	useEffect(() => {
+		getUserInfo()
 		// console.log(JSON.stringify(user))
 		// console.log(user.data.profile_image)
 		if (user.data.user_type === 'Creator') {
@@ -28,11 +32,29 @@ const Profile = (props) => {
 		}
 
 		return () => {
-            isMount = false
-        }
+			isMount = false
+		}
 	}, [])
 
-	
+	// Get User Info
+    const getUserInfo = async () => {
+		const url = 'users/get_users_info'
+        const method = 'POST'
+		const formData = new FormData()
+        formData.append('user_id', user.data.session_id)
+
+        await httpService(url, method, formData)
+            .then(res => res.json())
+            .then(json => {
+                if (isMount) setUserInfo(json.data[0])
+                // console.log("Profile User Info: ", JSON.stringify(json.data))
+            })
+            .catch(error => {
+                alert(error)
+                console.log(error)
+                setError(true)
+            })
+    }
 
 	const renderHeader = () => {
 		return (
@@ -59,12 +81,15 @@ const Profile = (props) => {
 							<View>
 								<Ionicon name='notifications' style={{ fontSize: 30 }} />
 							</View>
-							{/* <View>
-							<Ionicon name='chatbubble-ellipses-outline' style={{ fontSize: 30 }} />
-						</View> */}
-							<TouchableOpacity>
-								<Icon name='thumbs-up-sharp' />
+							<View>
+								<Ionicon name='chatbubble-ellipses-outline' style={{ fontSize: 30 }} />
+							</View>
+							<TouchableOpacity onPress={() => navigation.openDrawer()}>
+								<Ionicon name='ios-settings-outline' style={{ fontSize: 30 }} />
 							</TouchableOpacity>
+							{/* <TouchableOpacity>
+								<Icon name='thumbs-up-sharp' />
+							</TouchableOpacity> */}
 						</View>
 					</View>
 					<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
@@ -72,22 +97,21 @@ const Profile = (props) => {
 							<View style={styles.profileIconBtn}>
 								<Text style={{ fontWeight: 'bold' }}>Upvotes</Text>
 							</View>
-							<Text style={{ fontWeight: 'bold' }}>180</Text>
+							<Text style={{ fontWeight: 'bold' }}>{Object.keys(userInfo).length > 0 && userInfo.up_vote_count}</Text>
 
 						</View>
 						<View style={{ justifyContent: 'center', alignItems: 'center' }}>
 							<View style={styles.profileIconBtn}>
 								<Text style={{ fontWeight: 'bold' }}>Following</Text>
 							</View>
-							<Text style={{ fontWeight: 'bold' }}>108</Text>
+							<Text style={{ fontWeight: 'bold' }}>{Object.keys(userInfo).length > 0 && userInfo.following_count}</Text>
 
 						</View>
 						<View style={{ justifyContent: 'center', alignItems: 'center' }}>
 							<View style={styles.profileIconBtn}>
 								<Text style={{ fontWeight: 'bold' }}>Followers</Text>
 							</View>
-							<Text style={{ fontWeight: 'bold' }}>450</Text>
-
+							<Text style={{ fontWeight: 'bold' }}>{Object.keys(userInfo).length > 0 && userInfo.followers_count}</Text>
 						</View>
 					</View>
 

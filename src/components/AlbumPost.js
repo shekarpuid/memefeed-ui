@@ -146,7 +146,7 @@ const AlbumPost = ({ post, user, start, end, filterdAlbums, setFilterdAlbums, se
                     style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Image
                         source={
-                            share !== '' && share === 'comment'
+                            post.comment_count > 0
                                 ? CommentColor
                                 : Comment
                         }

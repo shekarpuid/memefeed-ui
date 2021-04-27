@@ -62,11 +62,13 @@ export default StyleSheet.create({
         borderRightWidth: 9, borderRightColor: "transparent",
         borderBottomWidth: 9, borderBottomColor: "#fff"
     },
+    postAvatar: {width: 30, height: 30},
     // Comment Footer
     commentFooter: { backgroundColor: whiteColor },
     footerItem: { width: '100%', backgroundColor: '#ccc', paddingHorizontal: ten, marginBottom: five },
-    commentFooterImage: { width: 22, height: 22 },
-    childCommentFooterImage: { width: 16, height: 16 },
+    commentFooterImage: { width: 20, height: 20 },
+    childCommentFooterImage: { width: 20, height: 20 },
+    postIcon: { width: 20, height: 20 },
     // Image Upload
     uploadAvatar: { width: '100%' },
     image: { height: 100, width: 100 },

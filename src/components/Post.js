@@ -13,15 +13,16 @@ import { PostDisLike } from './PostDisLike'
 import { PostShare } from './PostShare'
 import ParentComment from './ParentComment'
 
-import { Menu, MenuOptions, MenuOption, MenuTrigger, renderers } from 'react-native-popup-menu';
+import { Menu, MenuOptions, MenuOption, MenuTrigger, renderers } from 'react-native-popup-menu'
 import styles from '../styles/common'
 import { sendPostData } from '../actions/editPostActions'
 import PostReportModal from './PostReportModal'
 import PostSaveModal from './PostSaveModal'
-import {timesAgo} from '../utils'
+import { timesAgo } from '../utils'
+import AutoHeightImage from 'react-native-auto-height-image';
 
 const Post = (props) => {
-    const { 
+    const {
         post, user, start, end, data, setData, setShowPosts, dispatch, setEditing, menuId, setMenuId, getHashData
     } = props
     const [isVisible, setIsVisible] = useState(false)
@@ -41,7 +42,7 @@ const Post = (props) => {
     useEffect(() => {
         // console.log(post.user_id)
         // value.current = value
-        
+
         // console.log("Post id: ", post.id)
     }, [])
 
@@ -94,7 +95,7 @@ const Post = (props) => {
             // console.log(string.split(/((?:^|\s)(?:#[a-z\d-]+)|(?:^|\s)(?:@[a-z\d-]+))/gi))
             return string.split(/((?:^|\s)(?:#[a-z\d-]+)|(?:^|\s)(?:@[a-z\d-]+))/gi).filter(Boolean).map((v, i) => {
                 if (v.includes('#')) {
-                    return <TouchableOpacity onPress={ async () => {
+                    return <TouchableOpacity onPress={async () => {
                         await getHashData(v)
                     }}>
                         <Text key={i} style={{ color: '#00639c', fontWeight: 'bold' }}>{v}</Text>
@@ -141,7 +142,14 @@ const Post = (props) => {
     // Post footer
     function renderFooterContent(post) {
         return (
-            <View style={{ height: 70, backgroundColor: '#ffffff', flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', borderTopWidth: 0.8, borderBottomWidth: 0.8 }}>
+            <View
+                style={{
+                    height: 50, backgroundColor: '#ffffff', flex: 1, flexDirection: 'row', justifyContent: 'space-evenly',
+                    borderTopWidth: 0.8, borderBottomWidth: 0.8, borderColor: '#ddd',
+                    shadowColor: '#1d1d1d', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 1, shadowRadius: 3,
+                    elevation: 3
+                }}
+            >
                 <PostLike post={post} user={user} selectedVote={selectedVote} setSelectedVote={setSelectedVote} response={response} setResponse={setResponse} />
                 <PostDisLike post={post} user={user} selectedVote={selectedVote} setSelectedVote={setSelectedVote} response={response} setResponse={setResponse} />
                 <TouchableOpacity
@@ -149,12 +157,12 @@ const Post = (props) => {
                     style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Image
                         source={
-                            share !== '' && share === 'comment'
+                            post.comment_count > 0
                                 ? CommentColor
                                 : Comment
                         }
                         resizeMode="stretch"
-                        style={{ width: 30, height: 30 }}
+                        style={styles.postIcon}
                     />
                     <View>
                         <Text style={{ marginLeft: 2 }}>{post.comment_count !== null || post.comment_count !== undefined ? post.comment_count : null}</Text>
@@ -174,18 +182,16 @@ const Post = (props) => {
     return (
         <View style={{ width: '100%' }}>
             {/* Post header */}
-            <View style={{ height: 70, flexDirection: 'row', paddingLeft: 2, paddingRight: 2, backgroundColor: '#ffffff' }}>
-                <View style={{ flex: 0.3, paddingLeft: 4, justifyContent: 'center' }}>
-                    <Thumbnail
+            <View style={{ height: 55, flexDirection: 'row', paddingLeft: 2, paddingRight: 2, backgroundColor: '#ffffff' }}>
+                <View style={{ flex: 0.2, paddingLeft: 4, justifyContent: 'center' }}>
+                    <Thumbnail style={styles.postAvatar}
                         source={post.profile_image.length > 0 ? { uri: profileImage } : post.profile_image === null || post.profile_image === undefined ? defaultAvatar : defaultAvatar}
                     />
-                    {/* 'https://cdn.fastly.picmonkey.com/contentful/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=800&q=70', */}
-
                 </View>
 
-                <View style={{ flex: 0.7, justifyContent: 'center' }}>
-                    <Text style={{ fontWeight: 'bold' }}>{post.name}</Text>
-                    <Text style={{ fontSize: 12, color: '#808080' }}>{post.handle_name}</Text>
+                <View style={{ flex: 0.8, justifyContent: 'center' }}>
+                    <Text style={{ fontWeight: 'bold', fontSize: 14, marginTop: 5 }}>{post.name}</Text>
+                    <Text style={{ fontSize: 12, color: '#808080', fontWeight: 'bold' }}>{post.handle_name}</Text>
                 </View>
                 <View style={{ flex: 0.6, alignItems: 'flex-end', justifyContent: 'center', paddingRight: 10 }}>
                     {/* <Ionicon name="home" /> */}
@@ -202,11 +208,10 @@ const Post = (props) => {
             </View>
 
             {/* Post image */}
-            <View style={{ height: 250 }}>
-                <Image
+            <View>
+                <AutoHeightImage
+                    width={410}
                     source={{ uri: imageUrl }}
-                    resizeMode="stretch"
-                    style={{ width: '100%', height: '100%' }}
                 />
             </View>
 
@@ -218,7 +223,7 @@ const Post = (props) => {
 
 
             {/* more menu */}
-            {menuId === post.id ? 
+            {menuId === post.id ?
                 <View style={styles.moreMenuWrap}>
                     <View style={styles.triangle}></View>
                     <View style={styles.triangle2}></View>

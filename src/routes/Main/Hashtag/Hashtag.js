@@ -60,7 +60,7 @@ const Hashtag = (props) => {
                         setFollow(json)
                     }
                 }
-                console.log("Hashtag follow: ", JSON.stringify(json))
+                // console.log("Hashtag follow: ", JSON.stringify(json))
             })
             .catch(error => { alert(error); console.log(error) })
     }
@@ -78,7 +78,7 @@ const Hashtag = (props) => {
             .then(res => res.json())
             .then(json => {
                 if (isMount) setData(json)
-                // console.log("Hashtag Posts: ", JSON.stringify(json))
+                console.log("Hashtag Posts: ", JSON.stringify(json))
                 setFilterLoading(false)
             })
             .catch(error => {
@@ -93,6 +93,7 @@ const Hashtag = (props) => {
         const url = 'post_type/ptypelist'
         const formData = new FormData()
         formData.append('user_id', user.data.session_id)
+        formData.append('hashtag_id', hashTag.id)
         // console.log("Hashtag follow: ", JSON.stringify(formData))
 
         await httpService(url, 'POST', formData)
@@ -109,6 +110,7 @@ const Hashtag = (props) => {
         const url = 'post/sort_filter_types'
         const formData = new FormData()
         formData.append('user_id', user.data.session_id)
+        formData.append('hashtag_id', hashTag.id)
         // console.log("Hashtag follow: ", JSON.stringify(formData))
 
         await httpService(url, 'POST', formData)
@@ -161,7 +163,7 @@ const Hashtag = (props) => {
             formData.append('user_id', user.data.session_id)
             formData.append('sort_filter_id', value)
             formData.append('sort_hashtag_id', hashTag.id)
-            // console.log("Hashtag follow: ", JSON.stringify(formData))
+            // console.log("Hashtag follow: ", JSON.stringify(value))
 
             await httpService(url, 'POST', formData)
                 .then(res => res.json())
@@ -231,7 +233,7 @@ const Hashtag = (props) => {
                     </Body>
                     <Right style={{ flex: 0.3 }}>
                         {
-                            follow.status === 1 || hashTag.to_id === user.data.session_id ?
+                            hashTag.hashtag_status > 0 || follow.status === 1 || hashTag.to_id === user.data.session_id ?
                                 <View
                                     style={[styles.vhCenter, {
                                         borderWidth: 1, borderColor: '#00639c', borderRadius: 8, width: 120, height: 35, backgroundColor: '#00639c'
